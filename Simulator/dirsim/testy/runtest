@@ -1,0 +1,17 @@
+#!/bin/csh
+
+clear
+
+foreach i (`\ls test*`)
+   echo "Running " $i
+   $i -h -i 3 > dataout/temp.out
+   diff dataout/temp.out dataout/$i.t > diff.$i
+   if ( $status == 0) then
+      \rm diff.$i
+   else 
+      echo ""
+      echo "    INCORRECT OUTPUT: look at file diff."$i
+      echo ""
+   endif
+end
+echo ""
