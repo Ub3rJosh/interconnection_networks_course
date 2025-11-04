@@ -9,6 +9,7 @@
 #include <sys/stat.h>	// For folder generating
 #include <sys/types.h>	// For folder generating
 #include <errno.h>		// For folder generating
+// #include "../src/vars.h"
 
 /* Measurement Structure */
 typedef struct MEASURE MEASURE;
