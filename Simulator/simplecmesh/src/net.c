@@ -31,8 +31,8 @@
 #include "../incl/simsys.h"
 #include "../incl/tr.net.h"
 // #include "./util.c"
-#include "../thead.h"
 #include "./vars.h"
+#include "../thead.h"
 #include <assert.h>
 
 /**************************************************************************************\

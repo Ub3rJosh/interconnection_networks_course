@@ -45,14 +45,17 @@
 #define INTERARRIVAL		1.0		/* Inter-arrival Mean Time			*/
 #define NPKTS				10000  	/* Number of Packets Simulated		*/
 #define NCYCLES				10000.0	/* Number of Cycles Simulated		*/
-#define VC					4		/* Virtual Channels					*/
+#define VC					2		/* Virtual Channels					*/
 
 #define INJECTTIME			1.0		/* Reduced Cycle Time				*/
 #define BERNOULLI_RATE		0.2		/* Default Bernoulli Rate			*/
 #define POISSON_RATE		LAMBDA	/* Rate of arrival of packets		*/
 #define EXPONENTIAL_RATE	1/POISSION_RATE
 									/* Inter-arrival Rate 				*/
-#define PHITSZ				32		/* Number of bits per phit			*/
+
+#define PHITSZ				8		/* Number of bits per phit			*/
+// #define PHITSZ				32		/* Number of bits per phit			*/
+
 #define FLITSZ				4		/* Number of phits in a Flit		*/
 #define IBUFSZ				16		/* Buffer Size in phits				*/
 #define OBUFSZ				5

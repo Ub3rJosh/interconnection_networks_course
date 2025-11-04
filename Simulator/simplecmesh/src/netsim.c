@@ -35,19 +35,21 @@ void main(argc, argv)
 int argc;
 char *argv[];
 {
-   char CCline[200];
-   char arg[50];
+   char CCline[1024];
    int i;
 
    if (argc < 2) printf("\n     NETSIM: No command line arguments\n\n");
    else {
-      sprintf(CCline, "cc -I%s ",xSIMdir);
+      snprintf(CCline, sizeof(CCline), "cc -I%s ",xSIMdir);
+      
       for (i = 1; i < argc; i++)  {
-         sprintf(arg, "%s ", argv[i]);
-         strcat(CCline,arg);
+         strncat(CCline, argv[i], sizeof(CCline) - strlen(CCline) - 1);
+         strncat(CCline, " ", sizeof(CCline) - strlen(CCline) - 1);
       }
-      strcat(CCline, xSIMdir);
-      strcat(CCline, "/netsim.o");
+      strncat(CCline, xSIMdir, sizeof(CCline) - strlen(CCline) - 1);
+      strncat(CCline, "/netsim.o", sizeof(CCline) - strlen(CCline) - 1);
+      
+      
       printf("    %s\n",CCline);
       system(CCline);
    }
