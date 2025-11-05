@@ -11,6 +11,57 @@
 #include <errno.h>		// For folder generating
 // #include "../src/vars.h"
 
+
+
+// define CPUs based on hypercube configuration
+struct CPU_DICT CPU_MAPPING[MAX_CPU];
+
+void build_cpu_mapping() {
+	for (int i = 0; i < MAX_CPU; i++) {
+		CPU_MAPPING[i].code[0] = i & 0x1;  // we always have K >= 0
+		if (K >= 1){
+			CPU_MAPPING[i].code[1] = i & 0x2;
+		}
+		if (K >= 2){
+			CPU_MAPPING[i].code[2] = i & 0x4;
+		}
+		if (K >= 3){
+			CPU_MAPPING[i].code[3] = i & 0x8;
+		}
+		if (K >= 4){
+			CPU_MAPPING[i].code[4] = i & 0x16;
+		}
+		if (K >= 5){
+			CPU_MAPPING[i].code[5] = i & 0x32;
+		}
+		if (K >= 6){
+			CPU_MAPPING[i].code[6] = i & 0x64;
+		}
+		if (K >= 7){
+			CPU_MAPPING[i].code[7] = i & 0x128;
+		}
+		if (K >= 8){
+			CPU_MAPPING[i].code[8] = i & 0x256;
+		}
+		if (K >= 9){
+			CPU_MAPPING[i].code[9] = i & 0x512;
+		}
+		
+		CPU_MAPPING[i].cpu = i;
+	}
+}
+// void build_cpu_mapping();
+
+void print_cpu_mapping(){
+	for (int i = 0; i < MAX_CPU; i++) {
+		printf("cpu code: %s\n", CPU_MAPPING[i].code);
+		printf("cpu num: %i\n", CPU_MAPPING[i].cpu);
+		printf("\n");
+	}
+}
+// void print_cpu_mapping();
+
+
 /* Measurement Structure */
 typedef struct MEASURE MEASURE;
 typedef struct MEASURE *measureptr;
@@ -332,6 +383,9 @@ int argc;
 char** argv;
 {
 //******************************** Variable Initialization ******************************//
+	build_cpu_mapping();
+	print_cpu_mapping();
+	
 	EVENT* event;
 	int num_switch, iports, previous, next,i, j, partial_send, total, curswitch, next_switch;
 	char namestr[31];
@@ -1107,98 +1161,61 @@ int romm_route(int source, int dest)
 
 /***************************** Routing Variations  *****************************/
 /************************************ hypercube ********************************/
-int hypercube_route(int source, int dest)
-{
-	// int temp_cpu;
-	// // int x_src, y_src, x_dest, y_dest;
-	
-	// int temp_routing[K] = {0};  // define as all zero for initial routing
-	// // same with where the dest is
-	// int dest_routing[K] = {FindX0cord(dest),
-	// 					   FindX1cord(dest),
-	// 					   FindX2cord(dest),
-	// 					   FindX3cord(dest)};//,
-	// 					//    FindX4cord(dest),
-	// 					//    FindX5cord(dest),
-	// 					//    FindX6cord(dest),
-	// 					//    FindX7cord(dest),
-	// 					//    FindX8cord(dest),
-	// 					//    FindX9cord(dest)};
-	
-	// // fill in routing with current location
-	// for (int k = 0; k <= K, k++){
-	// 	switch (k){
-	// 		case 1:
-	// 			temp_rounting[k] = FindX0cord(source);
-	// 			break;
-	// 		case 2:
-	// 			...
-	// 		// default:
-	// 	}
-	// }
-	// // update smallest k
-	// for (int k = 0; k <= K, k++){
-	// 	if temp_routing[k] != dest_routing[k]
-	// }
-	// // TODO merge these two loops (just slap bottom one below lines of top one)
-	int temp_cpu;
+int hypercube_find_k(int source, int dest){
+	// interate over dimensionality of hypercube and route to first non-matching router
+	int dim_change;
 	for (int k = 0; k <= K; k++){
 		switch (k){
 			case 0:
 				if (FindX0cord(source) != FindX0cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 1:
 				if (FindX1cord(source) != FindX1cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 2:
 				if (FindX2cord(source) != FindX2cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 3:
 				if (FindX3cord(source) != FindX3cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 4:
 				if (FindX4cord(source) != FindX4cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 5:
 				if (FindX5cord(source) != FindX5cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 6:
 				if (FindX6cord(source) != FindX6cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 7:
 				if (FindX7cord(source) != FindX7cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 8:
 				if (FindX8cord(source) != FindX8cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			case 9:
 				if (FindX9cord(source) != FindX9cord(dest)){
-					temp_cpu = k;
+					return k;
 				}
-				break;
 			default:
-				temp_cpu -1;  // fail case
-				break;
+				printf("k not found when routing!!");
+				return -1;  // fail case
 		}
 	}
-	return temp_cpu;
+}
+
+int hypercube_route(int source, int dest){
+	int k_changed = hypercube_find_k(source, dest);
+	
+	// if 
 }
 
