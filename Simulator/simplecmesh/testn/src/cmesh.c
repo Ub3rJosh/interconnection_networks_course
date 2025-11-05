@@ -73,11 +73,11 @@ struct SWITCHSET{
 switchptr switches[MAX_ROUTERS];
 
 /* Local Functions for Torus Network */
-int FindXcord(int );					/* Find the x co-ordinate					*/
-int FindYcord(int );					/* Find the y co-ordinate					*/
-void intraconnections(int );		/* Create the switches						*/
-int GetSwitchId(int , int );			/* Get the switch ID from co-ordniates		*/
-int power(int,int);
+int FindXcord(int);					/* Find the x co-ordinate					*/
+int FindYcord(int);					/* Find the y co-ordinate					*/
+void intraconnections(int);	    	/* Create the switches						*/
+int GetSwitchId(int , int);			/* Get the switch ID from co-ordniates		*/
+int power(int, int);
 
 //************************************ Routing Function *******************************//
 int router(src,dest,id)
@@ -788,6 +788,59 @@ int FindYcord(int identity)
 	return ycord;
 }
 
+// X_i dimension 
+int FindX0cord(int identity)
+{
+	int cord = (identity/X0_NUMPERDIM);
+	return cord;
+}
+int FindX1cord(int identity)
+{
+	int cord = (identity/X1_NUMPERDIM);
+	return cord;
+}
+int FindX2cord(int identity)
+{
+	int cord = (identity/X2_NUMPERDIM);
+	return cord;
+}
+int FindX3cord(int identity)
+{
+	int cord = (identity/X3_NUMPERDIM);
+	return cord;
+}
+int FindX4cord(int identity)
+{
+	int cord = (identity/X4_NUMPERDIM);
+	return cord;
+}
+int FindX5cord(int identity)
+{
+	int cord = (identity/X5_NUMPERDIM);
+	return cord;
+}
+int FindX6cord(int identity)
+{
+	int cord = (identity/X6_NUMPERDIM);
+	return cord;
+}
+int FindX7cord(int identity)
+{
+	int cord = (identity/X7_NUMPERDIM);
+	return cord;
+}
+int FindX8cord(int identity)
+{
+	int cord = (identity/X8_NUMPERDIM);
+	return cord;
+}
+int FindX9cord(int identity)
+{
+	int cord = (identity/X9_NUMPERDIM);
+	return cord;
+}
+
+
 int GetSwitchId(int cordx, int cordy)
 {
     int switchid = ((cordy*XNUMPERDIM) + cordx);
@@ -980,7 +1033,7 @@ int Tornado(int source)
 /***************************** Routing Variations  *****************************/
 /********************************** VALIANT ************************************/
 
-int valiant_route( int source, int dest )
+int valiant_route(int source, int dest)
 {
 	int tempcpu;
 
@@ -995,7 +1048,7 @@ int valiant_route( int source, int dest )
 /***************************** Routing Variations  *****************************/
 /************************************ ROMM *************************************/
 
-int romm_route( int source, int dest )
+int romm_route(int source, int dest)
 {
 	int tempcpu;
 	int xsrc, ysrc, xdest, ydest, xtemp, ytemp, xlarge, xsmall, ylarge, ysmall;
@@ -1050,3 +1103,102 @@ int romm_route( int source, int dest )
 
 	return tempcpu;
 }
+
+
+/***************************** Routing Variations  *****************************/
+/************************************ hypercube ********************************/
+int hypercube_route(int source, int dest)
+{
+	// int temp_cpu;
+	// // int x_src, y_src, x_dest, y_dest;
+	
+	// int temp_routing[K] = {0};  // define as all zero for initial routing
+	// // same with where the dest is
+	// int dest_routing[K] = {FindX0cord(dest),
+	// 					   FindX1cord(dest),
+	// 					   FindX2cord(dest),
+	// 					   FindX3cord(dest)};//,
+	// 					//    FindX4cord(dest),
+	// 					//    FindX5cord(dest),
+	// 					//    FindX6cord(dest),
+	// 					//    FindX7cord(dest),
+	// 					//    FindX8cord(dest),
+	// 					//    FindX9cord(dest)};
+	
+	// // fill in routing with current location
+	// for (int k = 0; k <= K, k++){
+	// 	switch (k){
+	// 		case 1:
+	// 			temp_rounting[k] = FindX0cord(source);
+	// 			break;
+	// 		case 2:
+	// 			...
+	// 		// default:
+	// 	}
+	// }
+	// // update smallest k
+	// for (int k = 0; k <= K, k++){
+	// 	if temp_routing[k] != dest_routing[k]
+	// }
+	// // TODO merge these two loops (just slap bottom one below lines of top one)
+	int temp_cpu;
+	for (int k = 0; k <= K; k++){
+		switch (k){
+			case 0:
+				if (FindX0cord(source) != FindX0cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 1:
+				if (FindX1cord(source) != FindX1cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 2:
+				if (FindX2cord(source) != FindX2cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 3:
+				if (FindX3cord(source) != FindX3cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 4:
+				if (FindX4cord(source) != FindX4cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 5:
+				if (FindX5cord(source) != FindX5cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 6:
+				if (FindX6cord(source) != FindX6cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 7:
+				if (FindX7cord(source) != FindX7cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 8:
+				if (FindX8cord(source) != FindX8cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			case 9:
+				if (FindX9cord(source) != FindX9cord(dest)){
+					temp_cpu = k;
+				}
+				break;
+			default:
+				temp_cpu -1;  // fail case
+				break;
+		}
+	}
+	return temp_cpu;
+}
+
