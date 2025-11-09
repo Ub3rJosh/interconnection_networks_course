@@ -8,5 +8,5 @@ cmesh: $(SRC)/cmesh.c ../netsim.o
 	rm -f cmesh.o
 
 clean:
-# 	rm -r cmesh.dSYM
+	rm -r cmesh.dSYM
 	rm -f *out* *core* *dump* *mesh*

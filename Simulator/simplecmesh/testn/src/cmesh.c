@@ -1548,6 +1548,7 @@ char** argv;
 	// Interconnect the routers
 	int core_code[K];  // ex, {1, 0, 0, 1, 0, ..., 0} for i = 9
 	int link_code[K];  // copy for i-th core, to be linked to
+	printf("\nRADIX = %i, K = %i\n", RADIX, K);
 	for(int core = 0; core < MAX_ROUTERS; core++){
 		// This is a HYPERCUBE Topology, links to complement router in each dimension
 		// Do the connections in dimension k in K and link to conjugate k
@@ -1564,8 +1565,7 @@ char** argv;
 		memcpy(core_code, CORE_MAPPING[core], K * sizeof(int));  // copy K ints from i-th row
 		
 		// setup links
-		printf("RADIX = %i, K = %i\n", RADIX, K);
-		printf("core = %i", core);
+		printf("\n\ncore = %i\n", core);
 		
 		// link cores based on dimensionality
 		for (int k = 0; k < K; k++){  // loop over dimensionality to link conjugate core codes
@@ -1574,15 +1574,15 @@ char** argv;
 			int link_core = read_binary(link_code);
 			
 			printf("link_core = %i\n", link_core);
-			printf("\n");
-
 			
-			// if (link_core > core){
+			if (link_core > core){
+				printf("linking cores (%i) to (%i)", core, link_core);
 				NetworkConnect(switches[core]->output_buffer[k], 
 							   switches[link_core]->input_demux[k], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[k], 
 								  switches[core]->output_buffer[k]);
-				// }
+				}
+			printf("\n");
 		}
 		
 		
