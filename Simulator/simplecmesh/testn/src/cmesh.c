@@ -4,6 +4,7 @@
 
 #include "sim.h"
 #include <stdlib.h>
+#include <string.h>  // for memcpy
 #include "../../thead.h"// Topology Parameters
 #include <time.h>		// Track wall time
 #include <sys/stat.h>	// For folder generating
@@ -1046,8 +1047,8 @@ int CORE_MAPPING[MAX_CPU][K_max] = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 int find_core_n(int core_code[K]){
 	// iterate through and grab core number once core is found
 	int core_num = 0;
-	for (int i = 0; i < MAX_CPU; i++){  // scan across each code in matrix
-		for (int j = 0; j < K; i++){  // scan across each val (0 or 1) in each code
+	for (int i = 0; i < MAX_CPU; i++){  // scan across each code in matrix (each core)
+		for (int j = 0; j < K; i++){  // scan across each val (0 or 1) in each core's code
 			if (core_code[j] != CORE_MAPPING[i][j]){  // check each val (0 or 1) against given core_code
 				break;  // if they don't match then stop checking
 			}
@@ -1055,9 +1056,19 @@ int find_core_n(int core_code[K]){
 		}
 		core_num++;  // if we made it here without returning then we didn't find it so count up 1
 	}
-	
 }
-			
+
+// read in the (reversed) binary code
+int read_binary(int core_code[K]){
+	int core_num = 0;
+	int i = 0;
+	for (int k = 0; k < K; k++){
+		core_num += k * pow(2, i);
+		i++;
+	}
+	return core_num;
+}
+
 
 /* Measurement Structure */
 typedef struct MEASURE MEASURE;
@@ -1507,54 +1518,72 @@ char** argv;
 //********************************** Network Connections **********************************//
 	for( i = 0; i < MAX_ROUTERS; i++ ) // Build the Routers
 	{
-		intraconnections(i);
+			intraconnections(i);
 		injecttime[i] = 0.0;
 	}
 
 	// Interconnect the routers
-	for( i = 0; i < MAX_ROUTERS; i++ )
-	{
-		// This is a TORUS Topology, Does include wrap around links
-		// Do the connections in +x and -x directions
-		// Do the connections in +y and -y directions
+	int core_code[K];  // ex, {1, 0, 0, 1, 0, ..., 0} for i = 9
+	int link_code[K];  // copy for i-th core, to be linked to
+	for(i = 0; i < MAX_ROUTERS; i++){
+		// This is a HYPERCUBE Topology, links to complement router in each dimension
+		// Do the connections in dimension k in K and link to conjugate k
+		// Such as, for core {1, 0, 0 ,1} (core 9):
+		//     link to:
+		//	       {0, 0, 0, 1} // x_0 conjugate  (link to core 1)
+		//	       {1, 1, 0, 1} // x_1 conjugate  (link to core 13)
+		//	       {1, 0, 1, 1} // x_2 conjugate  (link to core 11)
+		//	       {1, 0, 0, 0} // x_3 conjugate  (link to core 8)
 		// Do for each switch, mux to buf connections
-		// Directions: 0 = +x
-		// Directions: 1 = -x
-		// Directions: 2 = +y
-		// Directions: 3 = -y
+		// Directions: k = x_i = {0, 1, ..., K, 0, 0, ..., 0}  (of size K_max)
+		
+		// get core code from mapping (just overwrite core_code)
+		memcpy(core_code, CORE_MAPPING[i], K * sizeof(int));  // copy K ints from i-th row
+		// link cores based on dimensionality
+		for (int k = 0; k < K; k++){  // loop over dimensionality to link conjugate core codes
+			memcpy(link_code, core_code, K * sizeof(int));  // copy K ints from i-th row
+			link_code[k] = 1 - link_code[k];  // get conjugate of k-th dimension
+			link_core = ...;
+			
+			// setup links
+			NetworkConnect(switches[i]->output_buffer[k], 
+						   switches[link_core]->input_demux[k], 0, 0);
+			DemuxCreditBuffer(switches[ax]->input_demux[k], 
+							  switches[i]->output_buffer[k]);
+		}
+		
+		
+		// // +x dimension
+		// ax = GetSwitchId(((switches[i]->xcord + 1)%(XNUMPERDIM)), switches[i]->ycord);
+		// NetworkConnect(switches[i]->output_buffer[k], switches[ax]->input_demux[k], 0, 0);
+		// DemuxCreditBuffer(switches[ax]->input_demux[k], switches[i]->output_buffer[k]);
+		// k++;
 
-		k = 0;
-		// +x dimension
-		ax = GetSwitchId(((switches[i]->xcord + 1)%(XNUMPERDIM)), switches[i]->ycord);
-		NetworkConnect(switches[i]->output_buffer[k], switches[ax]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[ax]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
+		// // -x dimension
+		// if( (switches[i]->xcord - 1) < 0 )
+		// 	var = XNUMPERDIM - 1;
+		// else
+		// 	var = switches[i]->xcord - 1;
+		// sx = GetSwitchId(var, switches[i]->ycord);
+		// NetworkConnect(switches[i]->output_buffer[k], switches[sx]->input_demux[k], 0, 0);
+		// DemuxCreditBuffer(switches[sx]->input_demux[k], switches[i]->output_buffer[k]);
+		// k++;
 
-		// -x dimension
-		if( (switches[i]->xcord - 1) < 0 )
-			var = XNUMPERDIM - 1;
-		else
-			var = switches[i]->xcord - 1;
-		sx = GetSwitchId(var, switches[i]->ycord);
-		NetworkConnect(switches[i]->output_buffer[k], switches[sx]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[sx]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
+		// // +y dimension
+		// ay = GetSwitchId(switches[i]->xcord, ((switches[i]->ycord + 1)%(YNUMPERDIM)) );
+		// NetworkConnect(switches[i]->output_buffer[k], switches[ay]->input_demux[k], 0, 0);
+		// DemuxCreditBuffer(switches[ay]->input_demux[k], switches[i]->output_buffer[k]);
+		// k++;
 
-		// +y dimension
-		ay = GetSwitchId(switches[i]->xcord, ((switches[i]->ycord + 1)%(YNUMPERDIM)) );
-		NetworkConnect(switches[i]->output_buffer[k], switches[ay]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[ay]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
-
-		// -y dimension
-		if( (switches[i]->ycord - 1) < 0 )
-			var = YNUMPERDIM - 1;
-		else
-			var = switches[i]->ycord - 1;
-		sy = GetSwitchId(switches[i]->xcord, var);
-		NetworkConnect(switches[i]->output_buffer[k], switches[sy]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[sy]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
+		// // -y dimension
+		// if( (switches[i]->ycord - 1) < 0 )
+		// 	var = YNUMPERDIM - 1;
+		// else
+		// 	var = switches[i]->ycord - 1;
+		// sy = GetSwitchId(switches[i]->xcord, var);
+		// NetworkConnect(switches[i]->output_buffer[k], switches[sy]->input_demux[k], 0, 0);
+		// DemuxCreditBuffer(switches[sy]->input_demux[k], switches[i]->output_buffer[k]);
+		// k++;
 	}
 
 //********************************** Send and Recieve Events **********************************//
