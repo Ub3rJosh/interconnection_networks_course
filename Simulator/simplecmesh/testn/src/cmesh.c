@@ -12,12 +12,30 @@
 #include <errno.h>		// For folder generating
 // #include "../src/vars.h"
 
+/* examples — add these (and any other functions that produced warnings) */
+int RandUniformInt(int min, int max);
+int RandBernoulli(double p);
+void YS__errmsg(const char *msg);
+EVENT *NewEvent(const char *name, void (*fn)(), int arg);
+void ActivitySetArg(EVENT *e, void *arg, int size);
+void ActivitySchedTime(EVENT *e, double t, int type);
+BUFFER *NewBuffer(int id, int size, int buftype);
+DEMUX *NewDemux(int id, int n, int (*router)(), int type);
+MUX *NewMux(int id, int n, int type);
+IPORT *NewIPort(int id, int n);
+OPORT *NewOPort(int id, int n);
+void NetworkConnect(MODULE *s, MODULE *d, int si, int di);
+void DemuxCreditBuffer(DEMUX *d, BUFFER *b);
+double GetSimTime(void);
+// void DriverRun(double);
+
+
 
 
 // define CPUs based on hypercube configuration
 // Is this a terrible way to do this? Yes.
 // Should this be generated at compilation, rather than hard coded as one giant block? Absolutely.
-int CORE_MAPPING[MAX_CPU][K_max] = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+int CORE_MAPPING[MAX_POSSIBLE_CPUS][K_max] = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 									{1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 									{0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, 
 									{1, 1, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -1048,7 +1066,7 @@ int find_core_n(int core_code[K]){
 	// iterate through and grab core number once core is found
 	int core_num = 0;
 	for (int i = 0; i < MAX_CPU; i++){  // scan across each code in matrix (each core)
-		for (int j = 0; j < K; i++){  // scan across each val (0 or 1) in each core's code
+		for (int j = 0; j < K; j++){  // scan across each val (0 or 1) in each core's code
 			if (core_code[j] != CORE_MAPPING[i][j]){  // check each val (0 or 1) against given core_code
 				break;  // if they don't match then stop checking
 			}
@@ -1063,7 +1081,9 @@ int read_binary(int core_code[K]){
 	int core_num = 0;
 	int i = 0;
 	for (int k = 0; k < K; k++){
-		core_num += k * pow(2, i);
+		if (core_code[k] > 0){
+			core_num += pow(2, i);
+		}
 		i++;
 	}
 	return core_num;
@@ -1391,8 +1411,6 @@ int argc;
 char** argv;
 {
 //******************************** Variable Initialization ******************************//
-	// build_cpu_mapping();
-	// print_cpu_mapping();
 	
 	EVENT* event;
 	int num_switch, iports, previous, next,i, j, partial_send, total, curswitch, next_switch;
@@ -1417,18 +1435,23 @@ char** argv;
 //******************************** Command Line Arguements ******************************//
 	if (argc > 1)
 		pktsz = atoi(argv[1]);
+		// pktsz = 4;
 
 	if (argc > 2)
 		network_load = ( (double)atoi(argv[2]))/10.0;
+		// network_load = (1)/10.0;
 
 	if (argc > 3)
 		network_loadA = ( (double)atoi(argv[3]))/100.0;
+		// network_loadA = (5)/100.0;
 
 	if (argc > 4)
 		ncycles = (double)atoi(argv[4]);
+		// ncycles = 10000;
 
 	if (argc > 5)
 		Traffic = atoi(argv[5]);
+		// Traffic = 0;
 
 	network_load = network_load + network_loadA;
 
@@ -1498,7 +1521,7 @@ char** argv;
 				printf("Worst Case Traffic: Tornado\n");
 				break;
 		default:
-				YS__errmsg("Should not get here");
+				YS__errmsg("Should not get here!");
 	}
 
 //******************************** Initialize Random Variables ******************************//
@@ -1525,7 +1548,7 @@ char** argv;
 	// Interconnect the routers
 	int core_code[K];  // ex, {1, 0, 0, 1, 0, ..., 0} for i = 9
 	int link_code[K];  // copy for i-th core, to be linked to
-	for(i = 0; i < MAX_ROUTERS; i++){
+	for(int core = 0; core < MAX_ROUTERS; core++){
 		// This is a HYPERCUBE Topology, links to complement router in each dimension
 		// Do the connections in dimension k in K and link to conjugate k
 		// Such as, for core {1, 0, 0 ,1} (core 9):
@@ -1538,18 +1561,28 @@ char** argv;
 		// Directions: k = x_i = {0, 1, ..., K, 0, 0, ..., 0}  (of size K_max)
 		
 		// get core code from mapping (just overwrite core_code)
-		memcpy(core_code, CORE_MAPPING[i], K * sizeof(int));  // copy K ints from i-th row
+		memcpy(core_code, CORE_MAPPING[core], K * sizeof(int));  // copy K ints from i-th row
+		
+		// setup links
+		printf("RADIX = %i, K = %i\n", RADIX, K);
+		printf("core = %i", core);
+		
 		// link cores based on dimensionality
 		for (int k = 0; k < K; k++){  // loop over dimensionality to link conjugate core codes
 			memcpy(link_code, core_code, K * sizeof(int));  // copy K ints from i-th row
 			link_code[k] = 1 - link_code[k];  // get conjugate of k-th dimension
-			link_core = ...;
+			int link_core = read_binary(link_code);
 			
-			// setup links
-			NetworkConnect(switches[i]->output_buffer[k], 
-						   switches[link_core]->input_demux[k], 0, 0);
-			DemuxCreditBuffer(switches[ax]->input_demux[k], 
-							  switches[i]->output_buffer[k]);
+			printf("link_core = %i\n", link_core);
+			printf("\n");
+
+			
+			// if (link_core > core){
+				NetworkConnect(switches[core]->output_buffer[k], 
+							   switches[link_core]->input_demux[k], 0, 0);
+				DemuxCreditBuffer(switches[link_core]->input_demux[k], 
+								  switches[core]->output_buffer[k]);
+				// }
 		}
 		
 		
