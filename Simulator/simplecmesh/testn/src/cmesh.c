@@ -151,7 +151,7 @@ int id;
 	demuxret = 0;
 	
 	printf("\nrouter() called!\n");
-	printf("source = %i, dest = %i, (router=%i), id=%i\n", *src, *dest, current_router, id);
+	printf("source = %i, dest = %i, id=%i\n", *src, *dest, id);
 	
 	
 	// hypercube routing
@@ -160,7 +160,8 @@ int id;
 	int tempcpu_x = FindXcord(tempcpu);
 	int tempcpu_y = FindYcord(tempcpu);
 	printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
-		src_router, cur_xoffset, cur_yoffset, 
+		// src_router, src_xoffset, src_yoffset, 
+		current_router, cur_xoffset, cur_yoffset,
 		dest_router, tempcpu_x, tempcpu_y);
 	
 	// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
@@ -168,8 +169,9 @@ int id;
 		//determine demuxret
 		int row_x = src_xoffset;
 		// printf("row_x = %i\n", row_x);
-		for (int demux = 0; demux < (K - 1) / 2; demux++){
+		for (int demux = 0; demux < (RADIX - 1) / 2; demux++){
 			printf("demux = %i, row_x = %i\n", demux, row_x);
+			printf("row_x (%i)  ?=  tempcpu_x (%i)\n", row_x, tempcpu_x);
 			if (row_x == tempcpu_x){
 				tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
 				printf("Routing from %i to %i (interemediate step!) using demux %i.\n", current_router, tempcpu, demux);
@@ -183,8 +185,9 @@ int id;
 	else{  // if the y-coords don't line up then we've only routed in x
 		//determine demuxret
 		int col_y = src_yoffset;
-		for (int demux = (K - 1) / 2; demux < K; demux++){
+		for (int demux = (RADIX - 1) / 2; demux < RADIX; demux++){
 			printf("demux = %i, col_y = %i\n", demux, col_y);
+			printf("col_y (%i)  ?=  tempcpu_y (%i)\n", col_y, tempcpu_y);
 			if (col_y == tempcpu_y){
 				tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
 				printf("Routing from %i to %i (final step!) using demux %i.\n", current_router, tempcpu, demux);
@@ -196,7 +199,7 @@ int id;
 	}
 	
 	// Keep track of Router and Link utiliztion
-	if(demuxret < RADIX - CONC)	// +x, -x, +y, -y
+	if(demuxret < (RADIX - 1) / 2)	// +x, -x, +y, -y
 		hoptype[1]++;
 	else 				// OPORT
 		hoptype[0]++;
@@ -204,48 +207,6 @@ int id;
 	printf("returning demux=%i for id=%i\n", demuxret, id);
 	return demuxret;
 }
-	
-	
-// 	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
-// 	if(current_router == dest_router) // Rout to the OPORT
-// 	{
-// 		// demuxret = 4 + *dest%CONC;
-// 		demuxret = RADIX + *dest%CONC;
-// 	}
-// 	else if(cur_xoffset != dest_xoffset) // ROUTE x
-// 	{
-// 		if(cur_xoffset < dest_xoffset)
-// 			demuxret = 0;
-// 		else if(cur_xoffset > dest_xoffset)
-// 			demuxret = 1;
-// 		else
-// 			YS__errmsg("Routing: Should not get here x\n");
-
-// 	}
-// 	else if(cur_yoffset != dest_yoffset) // ROUTE y
-// 	{
-// 		if(cur_yoffset < dest_yoffset)
-// 			demuxret = 2;
-// 		else if(cur_yoffset > dest_yoffset)
-// 			demuxret = 3;
-// 		else
-// 			YS__errmsg("Routing: Should not get here y\n");
-// 	}
-// 	else
-// 	{
-// 		YS__errmsg("Routing: Should not get here\n");
-// 	}
-
-// 	printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
-
-// 	// Keep track of Router and Link utiliztion
-// 	if(demuxret < 4)	// +x, -x, +y, -y
-// 		hoptype[1]++;
-// 	else 				// OPORT
-// 		hoptype[0]++;
-
-// 	return demuxret;
-// }
 
 //************************************ Send Process *************************************//
 void UserEventS()
@@ -263,19 +224,19 @@ void UserEventS()
 	index = ActivityArgSize(ME);
 	inport = (IPORT*)ActivityGetArg(ME);
 	
-	printf("UserEventS() -> src = (%i, %i), dest = (%i, %i)\n", xsrc, ysrc, xdest, ydest);
-	printf("UserEventS() -> ");
+	// printf("UserEventS() -> src = (%i, %i), dest = (%i, %i)\n", xsrc, ysrc, xdest, ydest);
+	// printf("UserEventS() -> ");
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
 	switch (EventGetState()) {
-
+		
 		case 0: /* To send or not to send */
 				if( ncycles < GetSimTime() )
 				{
 					EventReschedTime(0.0, 3);
 					return;
 				}
-
+				
 				retval = RandBernoulli(bernoulli_rate);
 				//retval = 1;
 				if( retval > 0 )
@@ -283,68 +244,66 @@ void UserEventS()
 				else
 					EventReschedTime(0.0, 2);
 				return;
-
+				
 		case 1: // Send a packet
 				if( IPortSpace(inport) != NPORTPKTS ) {
 					EventReschedSema(IPortSemaphore(inport), 1);
 					return;
 				}
-
-				// // Choose a Destination Node based on the traffec pattern
-				// switch(Traffic) {
-				// 	case 0: //Random
-				// 			do {
-				// 				dest = RandUniformInt(0, MAX_CPU - 1 );
-				// 			}while(dest == index);
-
-
-				// 			break;
-				// 	case 1: // Non-Random/Hotspot
-				// 			retval1 = RandBernoulli(0.25);
-				// 			if( retval1 > 0 ) {
-				// 				do {
-				// 					dest = RandUniformInt(0, MAX_CPU - 1 );
-				// 				}while(dest == index);
-				// 			}
-				// 			else {
-				// 				do {
-				// 					dest = RandUniformInt(0, MAX_CPU/4);
-				// 				}while(dest == index);
-				// 			}
-				// 			break;
-				// 	case 2:
-				// 			dest = BitReversal(index);
-				// 			break;
-				// 	case 3:
-				// 			dest = Butterfly(index);
-				// 			break;
-				// 	case 4:
-				// 			dest = Complement(index);
-				// 			break;
-				// 	case 5:
-				// 			dest = MatrixTranspose(index);
-				// 			break;
-				// 	case 6:
-				// 			dest = PerfectShuffle(index);
-				// 			break;
-				// 	case 7:
-				// 			dest = Neighbor(index);
-				// 			break;
-				// 	case 8:
-				// 			dest = Tornado(index);
-				// 			break;
-				// 	default:
-				// 			YS__errmsg("Traffic Type Undefined\n");
-				// 			break;
-				// }
+				
+				// Choose a Destination Node based on the traffec pattern
+				switch(Traffic) {
+					case 0: //Random
+							do {
+								dest = RandUniformInt(0, MAX_CPU - 1 );
+							}while(dest == index);
+							break;
+					case 1: // Non-Random/Hotspot
+							retval1 = RandBernoulli(0.25);
+							if( retval1 > 0 ) {
+								do {
+									dest = RandUniformInt(0, MAX_CPU - 1 );
+								}while(dest == index);
+							}
+							else {
+								do {
+									dest = RandUniformInt(0, MAX_CPU/4);
+								}while(dest == index);
+							}
+							break;
+					case 2:
+							dest = BitReversal(index);
+							break;
+					case 3:
+							dest = Butterfly(index);
+							break;
+					case 4:
+							dest = Complement(index);
+							break;
+					case 5:
+							dest = MatrixTranspose(index);
+							break;
+					case 6:
+							dest = PerfectShuffle(index);
+							break;
+					case 7:
+							dest = Neighbor(index);
+							break;
+					case 8:
+							dest = Tornado(index);
+							break;
+					default:
+							YS__errmsg("Traffic Type Undefined\n");
+							break;
+				}
 				
 				dest = 3;
-
+				
 				seqno = index + MAX_CPU * (NPKTS - npkts);
 				measure[index]->send = measure[index]->send + 1;
 				count++;
 				npkts--;
-
+				
 				// Make the packet and send into the IPORT
 				for( i = 0; i < pktsz/FLITSZ; i++ )
 				{
@@ -354,10 +313,20 @@ void UserEventS()
 					pktdata->pkttype = i;
 					pktdata->packetsize = pktsz;
 					pktdata->intercpu = tempcpu;
+					
+					// xsrc = FindXcord(pktdata->srccpu);
+					// ysrc = FindYcord(pktdata->srccpu);
+					// xdest = FindXcord(pktdata->destcpu);
+					// ydest = FindYcord(pktdata->destcpu);
+					// printf("SENDING PACKET from src = %i (%i, %i) to  dest = %i (%i, %i)\n", 
+					// 	tempcpu, xsrc, ysrc, 
+					// 	dest, xdest, ydest);
+					printf("PacketSend(pkt=%i, inport=%i, index=%i, dest=%i, i=%i, pktsz=%i, tempcpu=%i)\n", 
+						pkt, *inport, index, dest, i, pktsz, tempcpu);
 					senddelay = PacketSend(pkt, inport, index, dest, i, pktsz, tempcpu);
 				}
-				return;
-
+				return;	
+		
 		case 2: // Decide when this event will run next and reschedule it
 				injecttime[index] = injecttime[index] + inter;
 				if( injecttime[index] > GetSimTime() )
@@ -371,7 +340,7 @@ void UserEventS()
 					EventReschedTime(0.0, 0); //Run again this cycle
 					return;
 				}
-
+		
 		case 3: // Terminate this event
 				EventSetDelFlag();
 				return;
@@ -398,7 +367,7 @@ void UserEventR()
 			YS__errmsg("Incorrect destination received\n");
 		}
 
-		//printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
+		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
@@ -563,6 +532,7 @@ char** argv;
   	}
 
 //********************************** Network Connections **********************************//
+	// printf("\nIntraconnections:\n");
 	for( i = 0; i < MAX_ROUTERS; i++ ) // Build the Routers
 	{
 		intraconnections(i);
@@ -572,8 +542,7 @@ char** argv;
 	// Interconnect the routers
 	int link_core;
 	int core, core_x, core_y;
-	int row_x, temp_x;
-	// int col_y, temp_y;
+	int temp_x;
 	int link_i;  // for counting which link to do
 	
 	// link across row (for KxK 2D mesh core layout)
@@ -795,6 +764,8 @@ void intraconnections(int index)
 	SWITCHSET *switchlocal;
 	int i,j,k;
 	int curbuf, endbuf;
+	
+	// printf("intraconnections() ->\n");
 
 	// Malloc a switch
 	switches[index] = malloc(sizeof(SWITCHSET));
@@ -803,59 +774,91 @@ void intraconnections(int index)
 	switches[index]->xcord = FindXcord(index);
 	switches[index]->ycord = FindYcord(index);
 
-	//printf("index %d xcord %d, ycord %d\n", index, switches[index].xcord, switches[index].ycord);
+	// printf("Process for core %i (%i, %i)\n", index, switches[index]->xcord, switches[index]->ycord);
 
 	/* Look-Ahead Routing Demuxes */
+	// printf("Look-ahead routing demuxes:\n");
 	for( i = 0; i < (RADIX); i++ )
 	{
 		demux0 = NewDemux(demuxnum++, VC, router, LOOKAHEAD_DEMUX );
+		// printf("input_demux[%i] = %i\n", i, demux0);
+		// printf("input_demux[%i] =>  demuxnum = %i\n", i, demuxnum);
 		switches[index]->input_demux[i] = demux0;
 	}
 
 	/* Regular Routing Demuxes (RC) */
+	// printf("Regular routing demuxes:\n");
 	for( i = 0; i < (RADIX); i++ )
 	{
 		demux0 = NewDemux(demuxnum++, RADIX, router, REGULAR_DEMUX );
+		// printf("output_demux[%i] =>  demuxnum = %i\n", i, demuxnum);
 		switches[index]->output_demux[i] = demux0;
 	}
 
 	/* Routing/Virtual Channel Allocating Muxes (VA)  */
+	// printf("Routing/VC allocation muxes:\n");
 	for( i = 0; i < (RADIX); i++ )
 	{
 		mux0 = NewMux(muxnum++, VC, VIRTUAL_ALLOC_MUX );
+		// printf("input_mux[%i] =>  muxnum = %i\n", i, muxnum);
 		switches[index]->input_mux[i] = mux0;
 	}
 
 	/* Switch Allocating Muxes (SA)  */
+	// printf("Switch allocating muxes:\n");
 	for( i = 0; i < (RADIX); i++ )
 	{
 		mux0 = NewMux(muxnum++, RADIX, SWITCH_ALLOC_MUX );
+		// printf("output_mux[%i] =>  muxnum = %i\n", i, muxnum);
 		switches[index]->output_mux[i] = mux0;
 	}
 
 	/***************************************************/
 	/* Intra-Switch Connections: Component Connections */
+	// printf("Intra-Switch Connections: Component Connections:\n");
 	k = 0;
 	for( i = 0; i < (RADIX); i++ )
 	{
 		for( j = 0; j < (VC); j++ )
 		{
+			// printf("for i=%i, j=%i,\n", i, j);
+			
 			/* LookAhead Router Demux to Input Virtual Channel Buffers */
+			// printf("LookAhead Router Demux to Input Virtual Channel Buffers\n");
 			buf0 = NewBuffer(bufnum++, IBUFSZ, INPUT_BUFFER);
 			switches[index]->input_buffer[k] = buf0;
+			// printf("NetworkConnect(%i, %i, %i, %i)\n", 
+			// 	   switches[index]->input_demux[i],
+			// 	   switches[index]->input_buffer[k], j, 0);
 			NetworkConnect(switches[index]->input_demux[i], switches[index]->input_buffer[k], j, 0);
+			// printf("BufferCreditDemux(%i, %i, %i, %i)\n", 
+			// 	   switches[index]->input_buffer[k], 
+			// 	   switches[index]->input_demux[i]);
 			BufferCreditDemux(switches[index]->input_buffer[k],switches[index]->input_demux[i]);
 
 			/* Virtual Channel Buffers to Input Virtual Allocating Mux */
+			// printf("Virtual Channel Buffers to Input Virtual Allocating Mux\n");
+			// printf("NetworkConnect(%i, %i, %i, %i)\n",
+			// 	   switches[index]->input_buffer[k], 
+			// 	   switches[index]->input_mux[i], 0, j);
 			NetworkConnect(switches[index]->input_buffer[k], switches[index]->input_mux[i], 0, j);
 			k++;
+			// printf("\n");
 		}
 		/* Input Virtual Allocating Mux to Regular Routing Demux */
+		// printf("Input Virtual Allocating Mux to Regular Routing Demux\n");
+		// printf("NetworkConnect(%i, %i, %i, %i)\n",
+		// 	   switches[index]->input_mux[i], 
+		// 	   switches[index]->output_demux[i], 0, 0);
 		NetworkConnect(switches[index]->input_mux[i], switches[index]->output_demux[i], 0, 0);
 
 		buf1 = NewBuffer(bufnum++, OBUFSZ, OUTPUT_BUFFER );
 		switches[index]->output_buffer[i] = buf1;
 		/* Output Switch Allocating Mux to Output Buffers */
+		// printf("Output Switch Allocating Mux to Output Buffers\n");
+		// printf("NetworkConnect(%i, %i, %i, %i)",
+		// 	   switches[index]->output_mux[i], 
+		// 	   switches[index]->output_buffer[i], 0, 0);
 		NetworkConnect(switches[index]->output_mux[i], switches[index]->output_buffer[i], 0, 0);
 	}
 
@@ -879,7 +882,7 @@ void intraconnections(int index)
 		NetworkConnect(switches[index]->iport[i], switches[index]->input_demux[k], 0, 0);
 		NetworkConnect(switches[index]->output_buffer[k], switches[index]->oport[i], 0, 0);
 
-		//printf("demux %d oports %d buf %d \n", switches[index].input_demux[k], k, switches[index].output_buffer[k] );
+		// printf("demux %d oports %d buf %d \n", *switches[index]->input_demux[k], k, *switches[index]->output_buffer[k] );
 	}
 
 	//return switches[index];
