@@ -1785,7 +1785,7 @@ void intraconnections(int index)
 	switches[index]->xcord = FindXcord(index);
 	switches[index]->ycord = FindYcord(index);
 
-	printf("index %i xcord %i, ycord %i\n", index, switches[index]->xcord, switches[index]->ycord);
+	// printf("index %i xcord %i, ycord %i\n", index, switches[index]->xcord, switches[index]->ycord);
 	
 
 	/* Look-Ahead Routing Demuxes */
@@ -1868,7 +1868,7 @@ void intraconnections(int index)
 		NetworkConnect(switches[index]->iport[i], switches[index]->input_demux[k], 0, 0);
 		NetworkConnect(switches[index]->output_buffer[k], switches[index]->oport[i], 0, 0);
 
-		printf("demux %d oports %d buf %d \n", switches[index]->input_demux[k], k, switches[index]->output_buffer[k] );
+		// printf("demux %d oports %d buf %d \n", switches[index]->input_demux[k], k, switches[index]->output_buffer[k] );
 	}
 
 	//return switches[index];
@@ -2208,61 +2208,25 @@ int romm_route(int source, int dest)
 
 /***************************** Routing Variations  *****************************/
 /************************************ hypercube ********************************/
-int hypercube_find_k(int source, int dest){
-	// interate over dimensionality of hypercube and route to first non-matching router
-	int dim_change;
-	for (int k = 0; k <= K; k++){
-		switch (k){
-			case 0:
-				if (FindX0cord(source) != FindX0cord(dest)){
-					return k;
-				}
-			case 1:
-				if (FindX1cord(source) != FindX1cord(dest)){
-					return k;
-				}
-			case 2:
-				if (FindX2cord(source) != FindX2cord(dest)){
-					return k;
-				}
-			case 3:
-				if (FindX3cord(source) != FindX3cord(dest)){
-					return k;
-				}
-			case 4:
-				if (FindX4cord(source) != FindX4cord(dest)){
-					return k;
-				}
-			case 5:
-				if (FindX5cord(source) != FindX5cord(dest)){
-					return k;
-				}
-			case 6:
-				if (FindX6cord(source) != FindX6cord(dest)){
-					return k;
-				}
-			case 7:
-				if (FindX7cord(source) != FindX7cord(dest)){
-					return k;
-				}
-			case 8:
-				if (FindX8cord(source) != FindX8cord(dest)){
-					return k;
-				}
-			case 9:
-				if (FindX9cord(source) != FindX9cord(dest)){
-					return k;
-				}
-			default:
-				printf("k not found when routing!!");
-				return -1;  // fail case
+int hypercube_route(int source, int dest){
+	// get code of source and dest
+	int s_code[K];
+	int d_code[K];
+	int temp_code[K];
+	
+	memcpy(s_code, CORE_MAPPING[source], K * sizeof(int));
+	memcpy(d_code, CORE_MAPPING[ dest ], K * sizeof(int));
+	memcpy(temp_code, CORE_MAPPING[source], K * sizeof(int));
+	
+	// route to first non-matching dimension
+	for (int k = 0; k < K; k++){
+		if (s_code[k] != d_code[k]){
+			temp_code[k] = 1 - temp_code[k];  // get conjugate
+			break;  // leave loop now that we've found the next core's code
 		}
 	}
-}
-
-int hypercube_route(int source, int dest){
-	int k_changed = hypercube_find_k(source, dest);
 	
-	// if 
+	// get core corresponding to temp_code (keep legacy naming of the return)
+	int tempcpu = read_binary(temp_code);
+	return tempcpu;
 }
-
