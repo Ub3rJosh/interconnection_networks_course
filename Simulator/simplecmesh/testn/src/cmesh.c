@@ -463,37 +463,28 @@ char** argv;
 	}
 
 	// Interconnect the routers
-	int link_core;
+	int link_core, core_x, core_y;
 	int row_x, temp_x;
 	int col_y, temp_y;
 	for(int core = 0; core < MAX_ROUTERS; core++){
 		// This is a FLATTENED BUTTERFLY Topology
 		// Do the connections in +x and -x directions
 		// Do the connections in +y and -y directions
+		core_x = FindXcord()
 		
-		for (int x = 0; x < XNUMPERDIM; x++){
-			for (int y = 0; y < YNUMPERDIM; y++){
-				
+		for (int y = 0; y < YNUMPERDIM; y++){
+			for (int x = 0; x < XNUMPERDIM; x++){
 				// do row-wise connections
-				for (int k = 0; k < K; k++){
-					if (x == 0){
-						temp_x = k;
-					}
-					else{
-						temp_x = (k * y) + ((x + k) % k);
-					}
-					row_x = core - temp_x + x;
-					link_core = GetSwitchId(row_x, y);
-					
-					if (row_x != x){
-						printf("link core %i to core %i?\n", core, link_core);
-					}
+				if (y == 0){
+					temp_x = x;
 				}
-				
-				// do column-wise connections
+				else{
+					temp_x = core % (K * y);
+				}
+				row_x = core - temp_x + k;
+				// printf("row_x = %i", row_x);
+				link_core = GetSwitchId(row_x, )
 				printf("\n");
-				
-				
 			}
 		}
 	}
@@ -765,7 +756,7 @@ void intraconnections(int index)
 	//return switches[index];
 }
 
-//**************************** Router Coordinate Funcions ****************************//
+//**************************** Router Coordinate Functions ****************************//
 // Identifies the location of the router offset in the group
 int FindXcord(int identity)
 {
