@@ -66,6 +66,7 @@ struct MEASURE {
 measureptr measure[MAX_CPU];
 
 /* Local Variables */
+int router_calls = 0;
 int pktsz = 0;
 int Traffic = 0;
 double bernoulli_rate = 0.0;
@@ -150,13 +151,18 @@ int id;
 
 	demuxret = 0;
 	
-	printf("\nrouter() called!\n");
-	printf("source = %i, dest = %i, id=%i\n", *src, *dest, id);
+	router_calls++;
+	printf("\nrouter() called! (%i)\n", router_calls);
+	printf("source = %i (%i), dest = %i (%i), id=%i\n", 
+		   *src, src_router,
+		   *dest, dest_router,
+		    id);
 	
 	
 	// hypercube routing
 	printf("hypercube_route() called\n");
-	int tempcpu = route_hypercube(*src, *dest);
+	// int tempcpu = route_hypercube(*src, *dest);
+	int tempcpu = route_hypercube(src_router, dest_router);
 	int tempcpu_x = FindXcord(tempcpu);
 	int tempcpu_y = FindYcord(tempcpu);
 	printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
