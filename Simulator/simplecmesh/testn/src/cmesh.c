@@ -85,6 +85,7 @@ int *src;
 int *dest;
 int id;
 {
+	printf("router() called!\n");
 	int demuxret, skipcount, k, conc_pair, i;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
@@ -134,7 +135,7 @@ int id;
 		YS__errmsg("Routing: Should not get here\n");
 	}
 
-	printf("Routing from %i to %i with demuxret=%i\n", src, dest, demuxret);
+	// printf("Routing from %i to %i with demuxret=%i\n", src, dest, demuxret);
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
@@ -995,6 +996,7 @@ int Tornado(int source)
 
 int valiant_route( int source, int dest )
 {
+	printf("valliant_route() called!");
 	int tempcpu;
 
 	do
@@ -1010,6 +1012,7 @@ int valiant_route( int source, int dest )
 
 int romm_route( int source, int dest )
 {
+	printf("romm_route() called!");
 	int tempcpu;
 	int xsrc, ysrc, xdest, ydest, xtemp, ytemp, xlarge, xsmall, ylarge, ysmall;
 	int set = 0;
