@@ -1028,8 +1028,16 @@ void YS__HeadEvent()
 	int       athead = 0;
 	int		  k = 0;
 	double	  x = 0.0;
+   
 
 	pkt = (PACKET*)ActivityGetArg(ME);
+   
+   if (!pkt || !pkt->data.mesgptr) {
+        printf("ERROR: pkt=%p, mesgptr=%p, src=%i, dest=%i\n",
+               pkt, pkt ? pkt->data.mesgptr : NULL,
+               pkt ? pkt->data.srccpu : -1,
+               pkt ? pkt->data.destcpu : -1);
+    }
 
 //	if(pkt->data.seqno == 203)
 //	{

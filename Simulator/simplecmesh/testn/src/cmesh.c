@@ -1074,6 +1074,22 @@ int read_binary(int core_code[K]){
 	return core_num;
 }
 
+int hypercube_k(int source, int dest){
+	// get code of source and dest
+	int s_code[K];
+	int d_code[K];
+	int temp_code[K];
+	memcpy(s_code, CORE_MAPPING[source], K * sizeof(int));
+	memcpy(d_code, CORE_MAPPING[ dest ], K * sizeof(int));
+	memcpy(temp_code, CORE_MAPPING[source], K * sizeof(int));
+	
+	// route to first non-matching dimension
+	for (int k = 0; k < K; k++){
+		if (s_code[k] != d_code[k]){
+			return k;
+		}
+	}
+}
 
 /* Measurement Structure */
 typedef struct MEASURE MEASURE;
@@ -1149,8 +1165,7 @@ int *src;
 int *dest;
 int id;
 {
-	printf("router() called!\n");
-	printf("source = %i, dest = %i, (id=%i)\n", src, dest, id);
+	printf("running ->  router(source = %i, dest = %i, id=%i)\n", src, dest, id);
 	int demuxret;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
@@ -1168,41 +1183,15 @@ int id;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
 
-	demuxret = 0;
+	// demuxret = 0;
 
-	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
-	if(current_router == dest_router) // Rout to the OPORT
-	{
-		demuxret = XNUMPERDIM + *dest%CONC;  // assuming square layout!
-	}
-	else if(cur_xoffset != dest_xoffset) // ROUTE x
-	{
-		if(cur_xoffset < dest_xoffset)
-			demuxret = 0;
-		else if(cur_xoffset > dest_xoffset)
-			demuxret = 1;
-		else
-			YS__errmsg("Routing: Should not get here x\n");
-
-	}
-	else if(cur_yoffset != dest_yoffset) // ROUTE y
-	{
-		if(cur_yoffset < dest_yoffset)
-			demuxret = 2;
-		else if(cur_yoffset > dest_yoffset)
-			demuxret = 3;
-		else
-			YS__errmsg("Routing: Should not get here y\n");
-	}
-	else
-	{
-		YS__errmsg("Routing: Should not get here\n");
-	}
-
+	// DOR: 
+	demuxret = hypercube_k(src_router, dest_router);
+	printf("routing to %i from %i using demux %i\n", src_router, dest_router, demuxret);
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < XNUMPERDIM)	// +x, -x, +y, -y  (assuming square layout!)
+	if(demuxret < K)	// +x, -x, +y, -y
 		hoptype[1]++;
 	else 				// OPORT
 		hoptype[0]++;
