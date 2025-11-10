@@ -763,7 +763,7 @@ void intraconnections(int index)
 	{
 		for( j = 0; j < (RADIX); j++ )
 		{
-			printf("NetworkConnecting (%i) to (%i) with (%i, %i)\n", switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
+			// printf("NetworkConnecting (%i) to (%i) with (%i, %i)\n", switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
 			NetworkConnect(switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
 		}
 	}
@@ -779,7 +779,7 @@ void intraconnections(int index)
 		NetworkConnect(switches[index]->iport[i], switches[index]->input_demux[k], 0, 0);
 		NetworkConnect(switches[index]->output_buffer[k], switches[index]->oport[i], 0, 0);
 
-		//printf("demux %d oports %d buf %d \n", switches[index].input_demux[k], k, switches[index].output_buffer[k] );
+		printf("demux %i oports %i buf %i \n", switches[index]->input_demux[k], k, switches[index]->output_buffer[k] );
 	}
 
 	//return switches[index];
