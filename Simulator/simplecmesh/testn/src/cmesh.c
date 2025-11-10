@@ -1045,3 +1045,23 @@ int valiant_route( int source, int dest )
 
 // 	return tempcpu;
 // }
+
+/************************************ hypercube *************************************/
+int route_hypercube(int source, int dest){
+	int source_x = FindXcord(source);
+	int source_y = FindYcord(source);
+	int dest_x = FindXcord(dest);
+	int dest_y = FindYcord(dest);
+	
+	int tempcpu;  // keep legacy naming
+	
+	// route in x first, then y (DOR)
+	if (source_x != dest_x){
+		tempcpu = GetSwitchId(dest_x, source_y);
+	}
+	else{
+		tempcpu = dest;
+	}
+	return tempcpu;
+}
+

@@ -3,5 +3,6 @@
 *.pdf
 
 .DS_Store
+*/.DS_Store
 .history
 .vs_code
