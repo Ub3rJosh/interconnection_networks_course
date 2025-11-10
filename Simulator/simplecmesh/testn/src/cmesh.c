@@ -1565,7 +1565,7 @@ char** argv;
 		memcpy(core_code, CORE_MAPPING[core], K * sizeof(int));  // copy K ints from i-th row
 		
 		// setup links
-		printf("\n\ncore = %i\n", core);
+		// printf("\n\ncore = %i\n", core);
 		
 		// link cores based on dimensionality
 		for (int k = 0; k < K; k++){  // loop over dimensionality to link conjugate core codes
@@ -1573,16 +1573,13 @@ char** argv;
 			link_code[k] = 1 - link_code[k];  // get conjugate of k-th dimension
 			int link_core = read_binary(link_code);
 			
-			printf("link_core = %i\n", link_core);
+			// printf("link_core = %i\n", link_core);
+			printf("linking cores (%i) to (%i), [k=%i]\n", core, link_core, k);
 			
-			if (link_core > core){
-				printf("linking cores (%i) to (%i)", core, link_core);
-				NetworkConnect(switches[core]->output_buffer[k], 
-							   switches[link_core]->input_demux[k], 0, 0);
-				DemuxCreditBuffer(switches[link_core]->input_demux[k], 
-								  switches[core]->output_buffer[k]);
-				}
-			printf("\n");
+			NetworkConnect(switches[core]->output_buffer[k], 
+						   switches[link_core]->input_demux[k], 0, 0);
+			DemuxCreditBuffer(switches[link_core]->input_demux[k], 
+							  switches[core]->output_buffer[k]);
 		}
 		
 		
