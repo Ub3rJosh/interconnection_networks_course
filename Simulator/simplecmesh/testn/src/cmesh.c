@@ -1,6 +1,7 @@
 // Modified from Rice Parallel Testbed Simulator
-// Torus connections, mesh routing
+// Flattened Butterfly connections, mesh routing
 // Avinash Karanth, Ohio University
+// Modified by Joshua Maldonado, Ohio University
 
 #include "sim.h"
 #include <stdlib.h>
@@ -108,7 +109,8 @@ int id;
 	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
 	if(current_router == dest_router) // Rout to the OPORT
 	{
-		demuxret = 4 + *dest%CONC;
+		// demuxret = 4 + *dest%CONC;
+		demuxret = RADIX + *dest%CONC;
 	}
 	else if(cur_xoffset != dest_xoffset) // ROUTE x
 	{
@@ -461,49 +463,39 @@ char** argv;
 	}
 
 	// Interconnect the routers
-	for( i = 0; i < MAX_ROUTERS; i++ )
-	{
-		// This is a TORUS Topology, Does include wrap around links
+	int link_core;
+	int row_x, temp_x;
+	int col_y, temp_y;
+	for(int core = 0; core < MAX_ROUTERS; core++){
+		// This is a FLATTENED BUTTERFLY Topology
 		// Do the connections in +x and -x directions
 		// Do the connections in +y and -y directions
-		// Do for each switch, mux to buf connections
-		// Directions: 0 = +x
-		// Directions: 1 = -x
-		// Directions: 2 = +y
-		// Directions: 3 = -y
-
-		k = 0;
-		// +x dimension
-		ax = GetSwitchId(((switches[i]->xcord + 1)%(XNUMPERDIM)), switches[i]->ycord);
-		NetworkConnect(switches[i]->output_buffer[k], switches[ax]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[ax]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
-
-		// -x dimension
-		if( (switches[i]->xcord - 1) < 0 )
-			var = XNUMPERDIM - 1;
-		else
-			var = switches[i]->xcord - 1;
-		sx = GetSwitchId(var, switches[i]->ycord);
-		NetworkConnect(switches[i]->output_buffer[k], switches[sx]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[sx]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
-
-		// +y dimension
-		ay = GetSwitchId(switches[i]->xcord, ((switches[i]->ycord + 1)%(YNUMPERDIM)) );
-		NetworkConnect(switches[i]->output_buffer[k], switches[ay]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[ay]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
-
-		// -y dimension
-		if( (switches[i]->ycord - 1) < 0 )
-			var = YNUMPERDIM - 1;
-		else
-			var = switches[i]->ycord - 1;
-		sy = GetSwitchId(switches[i]->xcord, var);
-		NetworkConnect(switches[i]->output_buffer[k], switches[sy]->input_demux[k], 0, 0);
-		DemuxCreditBuffer(switches[sy]->input_demux[k], switches[i]->output_buffer[k]);
-		k++;
+		
+		for (int x = 0; x < XNUMPERDIM; x++){
+			for (int y = 0; y < YNUMPERDIM; y++){
+				
+				// do row-wise connections
+				for (int k = 0; k < K; k++){
+					if (x == 0){
+						temp_x = k;
+					}
+					else{
+						temp_x = (k * y) + ((x + k) % k);
+					}
+					row_x = core - temp_x + x;
+					link_core = GetSwitchId(row_x, y);
+					
+					if (row_x != x){
+						printf("link core %i to core %i?\n", core, link_core);
+					}
+				}
+				
+				// do column-wise connections
+				printf("\n");
+				
+				
+			}
+		}
 	}
 
 //********************************** Send and Recieve Events **********************************//
@@ -992,61 +984,61 @@ int valiant_route( int source, int dest )
 	return tempcpu;
 }
 
-/***************************** Routing Variations  *****************************/
-/************************************ ROMM *************************************/
+// /***************************** Routing Variations  *****************************/
+// /************************************ ROMM *************************************/
 
-int romm_route( int source, int dest )
-{
-	int tempcpu;
-	int xsrc, ysrc, xdest, ydest, xtemp, ytemp, xlarge, xsmall, ylarge, ysmall;
-	int set = 0;
+// int romm_route( int source, int dest )
+// {
+// 	int tempcpu;
+// 	int xsrc, ysrc, xdest, ydest, xtemp, ytemp, xlarge, xsmall, ylarge, ysmall;
+// 	int set = 0;
 
-	xsrc = FindXcord( source );
-	ysrc = FindYcord( source );
-	xdest = FindXcord( dest );
-	ydest = FindYcord( dest );
+// 	xsrc = FindXcord( source );
+// 	ysrc = FindYcord( source );
+// 	xdest = FindXcord( dest );
+// 	ydest = FindYcord( dest );
 
-	do
-	{
-		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
+// 	do
+// 	{
+// 		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
 
-		/*if( tempcpu != source ) {*/
-		xtemp = FindXcord( tempcpu );
-		ytemp = FindYcord( tempcpu );
+// 		/*if( tempcpu != source ) {*/
+// 		xtemp = FindXcord( tempcpu );
+// 		ytemp = FindYcord( tempcpu );
 
-		if( xsrc >= xdest )
-		{
-			xlarge = xsrc;
-			xsmall = xdest;
-		}
-		else
-		{
-			xlarge = xdest;
-			xsmall = xsrc;
-		}
+// 		if( xsrc >= xdest )
+// 		{
+// 			xlarge = xsrc;
+// 			xsmall = xdest;
+// 		}
+// 		else
+// 		{
+// 			xlarge = xdest;
+// 			xsmall = xsrc;
+// 		}
 
-		if( (xtemp >= xsmall) && (xtemp <= xlarge) )
-		{
-			if( ysrc >= ydest )
-			{
-				ylarge = ysrc;
-				ysmall = ydest;
-			}
-			else
-			{
-				ylarge = ydest;
-				ysmall = ysrc;
-			}
+// 		if( (xtemp >= xsmall) && (xtemp <= xlarge) )
+// 		{
+// 			if( ysrc >= ydest )
+// 			{
+// 				ylarge = ysrc;
+// 				ysmall = ydest;
+// 			}
+// 			else
+// 			{
+// 				ylarge = ydest;
+// 				ysmall = ysrc;
+// 			}
 
-			if( (ytemp >= ysmall) && (ytemp <= ylarge) )
-			{
-				set = 1;
-				break;
-			}
-		}
-		/*tempcpu = source;
-		}*/
-	}while( set == 0 );
+// 			if( (ytemp >= ysmall) && (ytemp <= ylarge) )
+// 			{
+// 				set = 1;
+// 				break;
+// 			}
+// 		}
+// 		/*tempcpu = source;
+// 		}*/
+// 	}while( set == 0 );
 
-	return tempcpu;
-}
+// 	return tempcpu;
+// }
