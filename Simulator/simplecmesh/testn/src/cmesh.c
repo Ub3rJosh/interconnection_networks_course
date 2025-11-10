@@ -88,7 +88,7 @@ int id;
 {
 	router_calls++;
 	printf("\nrouter() called! (%i)\n", router_calls);
-	printf("source = %i, dest = %i, (id=%i)\n", src, dest, id);
+	printf("source = %i, dest = %i, (id=%i)\n", *src, *dest, id);
 	int demuxret, skipcount, k, conc_pair, i;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
@@ -114,6 +114,7 @@ int id;
 	if(current_router == dest_router) // Rout to the OPORT
 	{
 		demuxret = 4 + *dest%CONC;
+		printf("At router! demuxret=%i", demuxret);
 	}
 	else if(cur_xoffset != dest_xoffset) // ROUTE x
 	{
@@ -143,11 +144,14 @@ int id;
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < 4)	// +x, -x, +y, -y
+	if(demuxret < RADIX - CONC - 1){	// +x, -x, +y, -y
 		hoptype[1]++;
-	else 				// OPORT
+		printf("Not at dest yet.");
+	}
+	else{ 				// OPORT
 		hoptype[0]++;
-
+		printf("At dest, injecting.");
+	}
 	return demuxret;
 }
 
