@@ -22,6 +22,7 @@ struct MEASURE {
 measureptr measure[MAX_CPU];
 
 /* Local Variables */
+int router_calls = 0;
 int pktsz = 0;
 int Traffic = 0;
 double bernoulli_rate = 0.0;
@@ -85,7 +86,8 @@ int *src;
 int *dest;
 int id;
 {
-	printf("router() called!\n");
+	router_calls++;
+	printf("\nrouter() called! (%i)\n", router_calls);
 	printf("source = %i, dest = %i, (id=%i)\n", src, dest, id);
 	int demuxret, skipcount, k, conc_pair, i;
 	int current_router, cur_xoffset, cur_yoffset;
