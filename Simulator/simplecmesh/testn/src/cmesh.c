@@ -134,6 +134,7 @@ int id;
 		YS__errmsg("Routing: Should not get here\n");
 	}
 
+	printf("Routing from %i to %i with demuxret=%i\n", src, dest, demuxret);
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
