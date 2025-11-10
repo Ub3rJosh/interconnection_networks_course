@@ -12,22 +12,6 @@
 #include <errno.h>		// For folder generating
 // #include "../src/vars.h"
 
-/* examples — add these (and any other functions that produced warnings) */
-int RandUniformInt(int min, int max);
-int RandBernoulli(double p);
-void YS__errmsg(const char *msg);
-EVENT *NewEvent(const char *name, void (*fn)(), int arg);
-void ActivitySetArg(EVENT *e, void *arg, int size);
-void ActivitySchedTime(EVENT *e, double t, int type);
-BUFFER *NewBuffer(int id, int size, int buftype);
-DEMUX *NewDemux(int id, int n, int (*router)(), int type);
-MUX *NewMux(int id, int n, int type);
-IPORT *NewIPort(int id, int n);
-OPORT *NewOPort(int id, int n);
-void NetworkConnect(MODULE *s, MODULE *d, int si, int di);
-void DemuxCreditBuffer(DEMUX *d, BUFFER *b);
-double GetSimTime(void);
-// void DriverRun(double);
 
 
 
@@ -1846,7 +1830,7 @@ void intraconnections(int index)
 			/* LookAhead Router Demux to Input Virtual Channel Buffers */
 			buf0 = NewBuffer(bufnum++, IBUFSZ, INPUT_BUFFER);
 			switches[index]->input_buffer[k] = buf0;
-			printf("connecting buffer = %i to switch[index]->input_buffer[k] = %i\n", buf0, switches[index]->input_buffer[k]);
+			// printf("connecting buffer = %i to switch[index]->input_buffer[k] = %i\n", buf0, switches[index]->input_buffer[k]);
 			NetworkConnect(switches[index]->input_demux[i], switches[index]->input_buffer[k], j, 0);
 			BufferCreditDemux(switches[index]->input_buffer[k],switches[index]->input_demux[i]);
 
@@ -1868,6 +1852,7 @@ void intraconnections(int index)
 	{
 		for( j = 0; j < (RADIX); j++ )
 		{
+			printf("NetworkConnecting (%i) to (%i) with (%i, %i)\n", switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
 			NetworkConnect(switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
 		}
 	}
