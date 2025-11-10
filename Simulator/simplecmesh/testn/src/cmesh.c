@@ -465,6 +465,8 @@ char** argv;
 	}
 
 	// Interconnect the routers
+	int src_x, src_y;
+	int dest_x, dest_y;
 	printf("RADIX = %i\n", RADIX);
 	for( i = 0; i < MAX_ROUTERS; i++ )
 	{
@@ -476,11 +478,19 @@ char** argv;
 		// Directions: 1 = -x
 		// Directions: 2 = +y
 		// Directions: 3 = -y
+		
+		src_x = FindXcord(i);
+		src_y = FindYcord(i);
 
 		k = 0;
 		// +x dimension
 		ax = GetSwitchId(((switches[i]->xcord + 1)%(XNUMPERDIM)), switches[i]->ycord);
-		printf("linking cores (%i) to (%i), [k=%i]\n", i, ax, k);
+		dest_x = FindXcord(ax);
+		dest_y = FindYcord(ax);
+		printf("linking core %i (%i, %i) to core %i (%i, %i), [k=%i]\n", 
+			i, src_x, src_y,
+			ax, dest_x, dest_y,
+			k);
 		NetworkConnect(switches[i]->output_buffer[k], switches[ax]->input_demux[k], 0, 0);
 		DemuxCreditBuffer(switches[ax]->input_demux[k], switches[i]->output_buffer[k]);
 		k++;
@@ -491,28 +501,45 @@ char** argv;
 		else
 			var = switches[i]->xcord - 1;
 		sx = GetSwitchId(var, switches[i]->ycord);
-		printf("linking cores (%i) to (%i), [k=%i]\n", i, sx, k);
+		dest_x = FindXcord(sx);
+		dest_y = FindYcord(sx);
+		printf("linking core %i (%i, %i) to core %i (%i, %i), [k=%i]\n", 
+			i, src_x, src_y,
+			sx, dest_x, dest_y,
+			k);
 		NetworkConnect(switches[i]->output_buffer[k], switches[sx]->input_demux[k], 0, 0);
 		DemuxCreditBuffer(switches[sx]->input_demux[k], switches[i]->output_buffer[k]);
 		k++;
 
 		// +y dimension
-		printf("linking cores (%i) to (%i), [k=%i]\n", i, ay, k);
 		ay = GetSwitchId(switches[i]->xcord, ((switches[i]->ycord + 1)%(YNUMPERDIM)) );
+		dest_x = FindXcord(ay);
+		dest_y = FindYcord(ay);
+		printf("linking core %i (%i, %i) to core %i (%i, %i), [k=%i]\n", 
+			i, src_x, src_y,
+			ay, dest_x, dest_y,
+			k);
 		NetworkConnect(switches[i]->output_buffer[k], switches[ay]->input_demux[k], 0, 0);
 		DemuxCreditBuffer(switches[ay]->input_demux[k], switches[i]->output_buffer[k]);
 		k++;
-
+		
 		// -y dimension
 		if( (switches[i]->ycord - 1) < 0 )
 			var = YNUMPERDIM - 1;
 		else
 			var = switches[i]->ycord - 1;
 		sy = GetSwitchId(switches[i]->xcord, var);
-		printf("linking cores (%i) to (%i), [k=%i]\n", i, sy, k);
+		dest_x = FindXcord(sy);
+		dest_y = FindYcord(sy);
+		printf("linking core %i (%i, %i) to core %i (%i, %i), [k=%i]\n", 
+			i, src_x, src_y,
+			sy, dest_x, dest_y,
+			k);
 		NetworkConnect(switches[i]->output_buffer[k], switches[sy]->input_demux[k], 0, 0);
 		DemuxCreditBuffer(switches[sy]->input_demux[k], switches[i]->output_buffer[k]);
 		k++;
+		
+		printf("\n");
 	}
 
 //********************************** Send and Recieve Events **********************************//
@@ -783,7 +810,7 @@ void intraconnections(int index)
 		NetworkConnect(switches[index]->iport[i], switches[index]->input_demux[k], 0, 0);
 		NetworkConnect(switches[index]->output_buffer[k], switches[index]->oport[i], 0, 0);
 
-		printf("demux %i oports %i buf %i \n", switches[index]->input_demux[k], k, switches[index]->output_buffer[k] );
+		// printf("demux %i oports %i buf %i \n", switches[index]->input_demux[k], k, switches[index]->output_buffer[k] );
 	}
 
 	//return switches[index];
