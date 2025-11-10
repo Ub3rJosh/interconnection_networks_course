@@ -10,7 +10,7 @@
 #define CONC					(1)
 #define XNUMPERDIM				(4)
 #define YNUMPERDIM				(4)
-#define K						(4)  // cores per dim
+#define K						(4)  // cores per dim (square)
 // #define MAX_ROUTERS				(XNUMPERDIM*YNUMPERDIM)
 #define MAX_ROUTERS				(K * K)
 #define MAX_CPU					(MAX_ROUTERS*CONC)

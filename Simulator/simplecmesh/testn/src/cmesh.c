@@ -562,25 +562,27 @@ char** argv;
 	int link_core;
 	int core, core_x, core_y;
 	int row_x, temp_x;
-	int col_y, temp_y;
+	// int col_y, temp_y;
 	int link_i;  // for counting which link to do
 	
 	// link across row (for KxK 2D mesh core layout)
 	for (int core = 0; core < MAX_CPU; core++){
 		link_i = 0;
-		// printf("\n\ncore = %i\n", core);
 		core_x = FindXcord(core);
 		core_y = FindYcord(core);
 		
 		// row
 		for (int x = 0; x < K; x++){
 			if (x != core_x){
-				row_x = core_y * K + x;
-				// printf("core_x = %i, row_x = %i\n", core_x, row_x);
+				link_core = core_y * K + x;
 				
-				printf("linking (%i, %i) to (%i, %i) via %i\n", core_x, core_y, row_x, core_y, link_i);
-				NetworkConnect(switches[core_x]->output_buffer[link_i], switches[row_x]->input_demux[link_i], 0, 0);
-				DemuxCreditBuffer(switches[row_x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
+				printf("row: linking core %i (%i, %i) to core %i (%i, %i) via buffer/demux %i\n", 
+					   core, core_x, core_y, 
+					   link_core, x, core_y, 
+					   link_i);
+				
+				NetworkConnect(switches[core_x]->output_buffer[link_i], switches[x]->input_demux[link_i], 0, 0);
+				DemuxCreditBuffer(switches[x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
 				link_i++;
 			}
 		}
@@ -588,16 +590,22 @@ char** argv;
 		// column
 		for (int y = 0; y < K; y++){
 			if (y != core_y){
-				col_y = y * K + core_x;
-				// printf("core_y = %i, row_y = %i\n", core_y, col_y);
+				link_core = y * K + core_x;
+
 				
-				printf("linking (%i, %i) to (%i, %i) via %i\n", core_x, core_y, core_x, col_y, link_i);
-				NetworkConnect(switches[core_y]->output_buffer[link_i], switches[col_y]->input_demux[link_i], 0, 0);
-				DemuxCreditBuffer(switches[col_y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
+				printf("col: linking core %i (%i, %i) to core %i (%i, %i) via buffer/demux %i\n", 
+					   core, core_x, core_y, 
+					   link_core, core_x, y, 
+					   link_i);
+				
+				NetworkConnect(switches[core_y]->output_buffer[link_i], switches[y]->input_demux[link_i], 0, 0);
+				DemuxCreditBuffer(switches[y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
 				link_i++;
 			}
 		}
+		printf("\n");
 	}
+	printf("Routers linked.\n\n");
 
 //********************************** Send and Recieve Events **********************************//
 	for( i = 0; i < MAX_ROUTERS; i++)
