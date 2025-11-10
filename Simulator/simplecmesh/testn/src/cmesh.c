@@ -12,6 +12,49 @@
 #include <errno.h>		// For folder generating
 // #include "../src/vars.h"
 
+
+
+//**************************** Router Coordinate Functions ****************************//
+// Identifies the location of the router offset in the group
+int FindXcord(int identity)
+{
+	int xcord = (identity%XNUMPERDIM);
+	return xcord;
+}
+
+// Identifies the location of the group offset in the system
+int FindYcord(int identity)
+{
+	int ycord = (identity/XNUMPERDIM);
+	return ycord;
+}
+
+int GetSwitchId(int cordx, int cordy)
+{
+    int switchid = ((cordy*XNUMPERDIM) + cordx);
+    return switchid;
+}
+
+
+/************************************ hypercube routing *************************************/
+int route_hypercube(int source, int dest){
+	int source_x = FindXcord(source);
+	int source_y = FindYcord(source);
+	int dest_x = FindXcord(dest);
+	int dest_y = FindYcord(dest);
+	
+	int tempcpu;  // keep legacy naming
+	
+	// route in x first, then y (DOR)
+	if (source_x != dest_x){
+		tempcpu = GetSwitchId(dest_x, source_y);
+	}
+	else{
+		tempcpu = dest;
+	}
+	return tempcpu;
+}
+
 /* Measurement Structure */
 typedef struct MEASURE MEASURE;
 typedef struct MEASURE *measureptr;
@@ -104,37 +147,67 @@ int id;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
 
-	demuxret = 0;
+	// demuxret = 0;
 
-	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
-	if(current_router == dest_router) // Rout to the OPORT
-	{
-		// demuxret = 4 + *dest%CONC;
-		demuxret = RADIX + *dest%CONC;
+	
+	// hypercube routing
+	int tempcpu = route_hypercube(*src, *dest);
+	int tempcpu_x = FindXcord(tempcpu);
+	int tempcpu_y = FindYcord(tempcpu);
+	
+	// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
+	if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
+		//determine demuxret
+		int row_x = src_xoffset;
+		for (int demuxret = 0; demuxret < K; demuxret++){
+			if (row_x == tempcpu_x){
+				return demuxret;
+			}
+			row_x++;
+		}
 	}
-	else if(cur_xoffset != dest_xoffset) // ROUTE x
-	{
-		if(cur_xoffset < dest_xoffset)
-			demuxret = 0;
-		else if(cur_xoffset > dest_xoffset)
-			demuxret = 1;
-		else
-			YS__errmsg("Routing: Should not get here x\n");
+	// if routing along x, demuxret in [3, 4, 5]
+	else{  // if the y-coords don't line up then we've only routed in x
+		//determine demuxret
+		int col_y = src_yoffset;
+		for (int demuxret = 0; demuxret < K; demuxret++){
+			if (col_y == tempcpu_y){
+				return demuxret;
+			}
+			col_y++;
+		}
+	}
+	
+	
+	// // DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
+	// if(current_router == dest_router) // Rout to the OPORT
+	// {
+	// 	// demuxret = 4 + *dest%CONC;
+	// 	demuxret = RADIX + *dest%CONC;
+	// }
+	// else if(cur_xoffset != dest_xoffset) // ROUTE x
+	// {
+	// 	if(cur_xoffset < dest_xoffset)
+	// 		demuxret = 0;
+	// 	else if(cur_xoffset > dest_xoffset)
+	// 		demuxret = 1;
+	// 	else
+	// 		YS__errmsg("Routing: Should not get here x\n");
 
-	}
-	else if(cur_yoffset != dest_yoffset) // ROUTE y
-	{
-		if(cur_yoffset < dest_yoffset)
-			demuxret = 2;
-		else if(cur_yoffset > dest_yoffset)
-			demuxret = 3;
-		else
-			YS__errmsg("Routing: Should not get here y\n");
-	}
-	else
-	{
-		YS__errmsg("Routing: Should not get here\n");
-	}
+	// }
+	// else if(cur_yoffset != dest_yoffset) // ROUTE y
+	// {
+	// 	if(cur_yoffset < dest_yoffset)
+	// 		demuxret = 2;
+	// 	else if(cur_yoffset > dest_yoffset)
+	// 		demuxret = 3;
+	// 	else
+	// 		YS__errmsg("Routing: Should not get here y\n");
+	// }
+	// else
+	// {
+	// 	YS__errmsg("Routing: Should not get here\n");
+	// }
 
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
@@ -768,26 +841,7 @@ void intraconnections(int index)
 	//return switches[index];
 }
 
-//**************************** Router Coordinate Functions ****************************//
-// Identifies the location of the router offset in the group
-int FindXcord(int identity)
-{
-	int xcord = (identity%XNUMPERDIM);
-	return xcord;
-}
 
-// Identifies the location of the group offset in the system
-int FindYcord(int identity)
-{
-	int ycord = (identity/XNUMPERDIM);
-	return ycord;
-}
-
-int GetSwitchId(int cordx, int cordy)
-{
-    int switchid = ((cordy*XNUMPERDIM) + cordx);
-    return switchid;
-}
 
 //**************************** Utility Funcions ****************************//
 int power(int base, int n) // base^n
@@ -1046,22 +1100,5 @@ int valiant_route( int source, int dest )
 // 	return tempcpu;
 // }
 
-/************************************ hypercube *************************************/
-int route_hypercube(int source, int dest){
-	int source_x = FindXcord(source);
-	int source_y = FindYcord(source);
-	int dest_x = FindXcord(dest);
-	int dest_y = FindYcord(dest);
-	
-	int tempcpu;  // keep legacy naming
-	
-	// route in x first, then y (DOR)
-	if (source_x != dest_x){
-		tempcpu = GetSwitchId(dest_x, source_y);
-	}
-	else{
-		tempcpu = dest;
-	}
-	return tempcpu;
-}
+
 
