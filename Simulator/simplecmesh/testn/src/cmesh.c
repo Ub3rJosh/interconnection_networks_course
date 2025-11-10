@@ -157,58 +157,68 @@ int id;
 		   *src, src_router,
 		   *dest, dest_router,
 		    id);
-	
-	
-	// hypercube routing
-	printf("hypercube_route() called\n");
-	// int tempcpu = route_hypercube(*src, *dest);
-	int tempcpu = route_hypercube(src_router, dest_router);
-	int tempcpu_x = FindXcord(tempcpu);
-	int tempcpu_y = FindYcord(tempcpu);
-	printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
-		// src_router, src_xoffset, src_yoffset, 
-		current_router, cur_xoffset, cur_yoffset,
-		dest_router, tempcpu_x, tempcpu_y);
-	
-	// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
-	if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
-		//determine demuxret
-		int row_x = src_xoffset;
-		// printf("row_x = %i\n", row_x);
-		for (int demux = 0; demux < (RADIX - 1) / 2; demux++){
-			printf("demux = %i, row_x = %i\n", demux, row_x);
-			printf("row_x (%i)  ?=  tempcpu_x (%i)\n", row_x, tempcpu_x);
-			if (row_x == tempcpu_x){
-				tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
-				printf("Routing from %i to %i (interemediate step!) using demux %i.\n", current_router, tempcpu, demux);
-				demuxret = demux;
-				break;
+		
+	if (*src == *dest){
+		printf("I am at the source! :)");
+		demuxret = 6;
+	}
+	else{
+		// hypercube routing
+		printf("hypercube_route() called\n");
+		// int tempcpu = route_hypercube(*src, *dest);
+		int tempcpu = route_hypercube(src_router, dest_router);
+		int tempcpu_x = FindXcord(tempcpu);
+		int tempcpu_y = FindYcord(tempcpu);
+		printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
+			// src_router, src_xoffset, src_yoffset, 
+			current_router, cur_xoffset, cur_yoffset,
+			dest_router, tempcpu_x, tempcpu_y);
+		
+		// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
+		if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
+			//determine demuxret
+			int row_x = src_xoffset;
+			// printf("row_x = %i\n", row_x);
+			for (int demux = 0; demux < (RADIX - 1) / 2; demux++){
+				printf("demux = %i, row_x = %i\n", demux, row_x);
+				printf("row_x (%i)  ?=  tempcpu_x (%i)\n", row_x, tempcpu_x);
+				if (row_x == tempcpu_x){
+					tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
+					printf("Routing from %i to %i (interemediate step!) using demux %i.\n", current_router, tempcpu, demux);
+					demuxret = demux;
+					break;
+				}
+				row_x++;
 			}
-			row_x++;
+		}
+		// if routing along x, demuxret in [(K - 1) / 2, ..., K]
+		else{  // if the y-coords don't line up then we've only routed in x
+			//determine demuxret
+			int col_y = src_yoffset;
+			for (int demux = (RADIX - 1) / 2; demux < RADIX; demux++){
+				printf("demux = %i, col_y = %i\n", demux, col_y);
+				printf("col_y (%i)  ?=  tempcpu_y (%i)\n", col_y, tempcpu_y);
+				if (col_y == tempcpu_y){
+					tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
+					printf("Routing from %i to %i (final step!) using demux %i.\n", current_router, tempcpu, demux);
+					demuxret = demux;
+					break;
+				}
+				col_y++;
+			}
 		}
 	}
-	// if routing along x, demuxret in [(K - 1) / 2, ..., K]
-	else{  // if the y-coords don't line up then we've only routed in x
-		//determine demuxret
-		int col_y = src_yoffset;
-		for (int demux = (RADIX - 1) / 2; demux < RADIX; demux++){
-			printf("demux = %i, col_y = %i\n", demux, col_y);
-			printf("col_y (%i)  ?=  tempcpu_y (%i)\n", col_y, tempcpu_y);
-			if (col_y == tempcpu_y){
-				tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
-				printf("Routing from %i to %i (final step!) using demux %i.\n", current_router, tempcpu, demux);
-				demuxret = demux;
-				break;
-			}
-			col_y++;
-		}
-	}
 	
-	// Keep track of Router and Link utiliztion
-	if(demuxret < (RADIX - 1) / 2)	// +x, -x, +y, -y
+	// Keep track of Router and Link utilization
+	// if(demuxret < (RADIX - 1) / 2){	// +x, -x, +y, -y
+	if(demuxret <= 5){	// +x, -x, +y, -y
 		hoptype[1]++;
-	else 				// OPORT
+		printf("doing other thing here\n");
+	}
+	else{ 				// OPORT
 		hoptype[0]++;
+		printf("injecting here\n");
+	}
 	
 	printf("returning demux=%i for id=%i\n", demuxret, id);
 	return demuxret;
@@ -234,6 +244,8 @@ void UserEventS()
 	// printf("UserEventS() -> ");
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
+	int eventgetstate = EventGetState();
+	// printf("EventGetState() = %i\n", eventgetstate);
 	switch (EventGetState()) {
 		
 		case 0: /* To send or not to send */
@@ -313,7 +325,7 @@ void UserEventS()
 				// Make the packet and send into the IPORT
 				for( i = 0; i < pktsz/FLITSZ; i++ )
 				{
-					pkt = NewPacket(seqno,NULL,FLITSZ);
+					pkt = NewPacket(seqno, NULL,FLITSZ);
 					pktdata = PacketGetData(pkt);
 					pktdata->createtime = injecttime[index];
 					pktdata->pkttype = i;
@@ -327,8 +339,8 @@ void UserEventS()
 					// printf("SENDING PACKET from src = %i (%i, %i) to  dest = %i (%i, %i)\n", 
 					// 	tempcpu, xsrc, ysrc, 
 					// 	dest, xdest, ydest);
-					printf("PacketSend(pkt=%i, inport=%i, index=%i, dest=%i, i=%i, pktsz=%i, tempcpu=%i)\n", 
-						pkt, *inport, index, dest, i, pktsz, tempcpu);
+					printf("PacketSend(pkt=pkt, inport=%i, index=%i, dest=%i, i=%i, pktsz=%i, tempcpu=%i)\n", 
+						*inport, index, dest, i, pktsz, tempcpu);
 					senddelay = PacketSend(pkt, inport, index, dest, i, pktsz, tempcpu);
 				}
 				return;	
@@ -372,16 +384,16 @@ void UserEventR()
 			printf("Receiver %d\n", index);
 			YS__errmsg("Incorrect destination received\n");
 		}
-
+		
 		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
-
+		
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
 			measure[pktdata->srccpu]->recv = measure[pktdata->srccpu]->recv + 1;
 			recvcount++;
 			curlat = (GetSimTime() - pktdata->createtime);
 			avglat = avglat + curlat;
-
+			
 			// Stat update and print to file
 			if(curlat > maxlat)
 				maxlat = curlat;
@@ -602,6 +614,7 @@ char** argv;
 			event = NewEvent(namestr, UserEventS, 0);					/* Create sender process 0       */
 			ActivitySetArg(event, switches[i]->iport[j], i * CONC + j);	/* Pass process its id           */
   			ActivitySchedTime(event, 0.0, INDEPENDENT);				/* Schedule process              */
+			// printf("%i, %i\n", i, j);
 		}
 	}
 
@@ -613,6 +626,7 @@ char** argv;
 			event = NewEvent(namestr, UserEventR, 0);					/* Create sender process 0       */
 			ActivitySetArg(event,switches[i]->oport[j], i * CONC + j);	/* Pass process its id           */
   			ActivitySchedTime(event, 0.0, INDEPENDENT);				/* Schedule process              */
+			// printf("%i, %i\n", i, j);
 		}
 	}
 
@@ -638,9 +652,9 @@ char** argv;
 	NetworkCollectStats(OPORTTIME,NOHIST,0.0,0.0);
 	NetworkCollectStats(MOVETIME,NOHIST,0.0,0.0);
 	NetworkCollectStats(LIFETIME,NOHIST,0.0,0.0);
-
+	
 	DriverRun(0.0);  // Start the simulation, on return simulation is complete
-
+	
 //**************************** Latency Calculation ******************************//
 	total_send = 0;
 	total_recv = 0;

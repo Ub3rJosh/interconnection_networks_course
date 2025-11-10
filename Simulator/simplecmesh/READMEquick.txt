@@ -23,3 +23,4 @@ To run Netsim:
 
 
 ./cmesh 4 1 5 1 0
+./cmesh 4 1 5 1 8

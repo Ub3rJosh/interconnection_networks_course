@@ -1031,6 +1031,15 @@ void YS__HeadEvent()
 
 	pkt = (PACKET*)ActivityGetArg(ME);
    
+   // printf("Packet Details:\n");
+   // printf("pkt->headbuf = %i\n", pkt->headbuf);
+   // printf("pkt->carrybuf = %i\n", pkt->carrybuf);
+   // printf("pkt->tailbuf = %i\n", pkt->tailbuf);
+   // printf("pkt->intex = %i\n", pkt->index);
+   // printf("pkt->muxptr = %i\n", pkt->muxptr);
+   // printf("pkt->next = %i\n", pkt->next);
+   
+   
    // printf("\nrouter() call: pkt=%p, src=%p, dest=%p, id=%d\n", pkt, &(pkt->data.srccpu), &(pkt->data.destcpu), demux->id);
    // printf("src=%i, dest=%i, id=%i\n", &(pkt->data.srccpu), &(pkt->data.destcpu), demux->id);
    //	if(pkt->data.seqno == 203)
@@ -1082,6 +1091,9 @@ void YS__HeadEvent()
 				// printf("YS__HeadEvent() -> Checking for buffer -> \n");
             // printf("(BUFFER*)curmod) = %p\n", (BUFFER*)curmod);
             // printf("BUFFER=%d, next_module=%p\n", buf->id, buf->nextmodule);
+            if ((buf->nextmodule) == NULL){
+               printf("NULL POINTER FOUND IN buf->nextmodule\n");
+            }
 				pkt->module = ((BUFFER*)curmod)->nextmodule;
             // printf("packet->module = %p\n, ", pkt->module);
 				// printf("In Buffer %d\n", pkt->module->id);
@@ -1102,6 +1114,8 @@ void YS__HeadEvent()
 			else YS__errmsg("YS__HeadEvent() -> Invalid current module type");
 
 			/********************* LOOKAHEAD ROUTER & REGULAR ROUTER ***************************/
+         // printf("%p\n", pkt->module);
+         // printf("%i\n", pkt->module->type);
 			if (pkt->module->type == DEMUXTYPE) {
 				demux = (DEMUX*)pkt->module;
 				TRACE_HEAD_nextdemux1;
