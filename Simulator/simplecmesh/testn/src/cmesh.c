@@ -1171,7 +1171,7 @@ int id;
 	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
 	if(current_router == dest_router) // Rout to the OPORT
 	{
-		demuxret = 2 * K + *dest%CONC;
+		demuxret = XNUMPERDIM + *dest%CONC;  // assuming square layout!
 	}
 	else if(cur_xoffset != dest_xoffset) // ROUTE x
 	{
@@ -1200,7 +1200,7 @@ int id;
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < 2 * K)	// +x, -x, +y, -y
+	if(demuxret < XNUMPERDIM)	// +x, -x, +y, -y  (assuming square layout!)
 		hoptype[1]++;
 	else 				// OPORT
 		hoptype[0]++;
@@ -1852,7 +1852,7 @@ void intraconnections(int index)
 	{
 		for( j = 0; j < (RADIX); j++ )
 		{
-			printf("NetworkConnecting (%i) to (%i) with (%i, %i)\n", switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
+			// printf("NetworkConnecting (%i) to (%i) with (%i, %i)\n", switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
 			NetworkConnect(switches[index]->output_demux[i], switches[index]->output_mux[j], j, i);
 		}
 	}
@@ -1868,7 +1868,7 @@ void intraconnections(int index)
 		NetworkConnect(switches[index]->iport[i], switches[index]->input_demux[k], 0, 0);
 		NetworkConnect(switches[index]->output_buffer[k], switches[index]->oport[i], 0, 0);
 
-		//printf("demux %d oports %d buf %d \n", switches[index].input_demux[k], k, switches[index].output_buffer[k] );
+		printf("demux %d oports %d buf %d \n", switches[index]->input_demux[k], k, switches[index]->output_buffer[k] );
 	}
 
 	//return switches[index];
