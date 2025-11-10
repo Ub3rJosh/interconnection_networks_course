@@ -1030,6 +1030,9 @@ void YS__HeadEvent()
 	double	  x = 0.0;
 
 	pkt = (PACKET*)ActivityGetArg(ME);
+   
+   printf("\nrouter() call: pkt=%p, src=%p, dest=%p, id=%d\n", pkt, &(pkt->data.srccpu), &(pkt->data.destcpu), demux->id);
+   printf("src=%i, dest=%i, id=%i\n", &(pkt->data.srccpu), &(pkt->data.destcpu), demux->id);
 
 //	if(pkt->data.seqno == 203)
 //	{
