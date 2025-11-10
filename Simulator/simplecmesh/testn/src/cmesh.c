@@ -1187,7 +1187,7 @@ int id;
 	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
 	if(current_router == dest_router) // Rout to the OPORT
 	{
-		demuxret = 4 + *dest%CONC;
+		demuxret = 2 * K + *dest%CONC;
 	}
 	else if(cur_xoffset != dest_xoffset) // ROUTE x
 	{
@@ -1216,7 +1216,7 @@ int id;
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < 4)	// +x, -x, +y, -y
+	if(demuxret < 2 * K)	// +x, -x, +y, -y
 		hoptype[1]++;
 	else 				// OPORT
 		hoptype[0]++;
@@ -1801,12 +1801,14 @@ void intraconnections(int index)
 	switches[index]->xcord = FindXcord(index);
 	switches[index]->ycord = FindYcord(index);
 
-	//printf("index %d xcord %d, ycord %d\n", index, switches[index].xcord, switches[index].ycord);
+	printf("index %i xcord %i, ycord %i\n", index, switches[index]->xcord, switches[index]->ycord);
+	
 
 	/* Look-Ahead Routing Demuxes */
 	for( i = 0; i < (RADIX); i++ )
 	{
 		demux0 = NewDemux(demuxnum++, VC, router, LOOKAHEAD_DEMUX );
+		printf("look-ahead demux0 = %i\n", demux0);
 		switches[index]->input_demux[i] = demux0;
 	}
 
@@ -1814,6 +1816,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		demux0 = NewDemux(demuxnum++, RADIX, router, REGULAR_DEMUX );
+		printf("regular demux0 = %i\n", demux0);
 		switches[index]->output_demux[i] = demux0;
 	}
 
@@ -1821,6 +1824,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		mux0 = NewMux(muxnum++, VC, VIRTUAL_ALLOC_MUX );
+		printf("routing/virtual mux0 = %i\n", mux0);
 		switches[index]->input_mux[i] = mux0;
 	}
 
@@ -1828,6 +1832,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		mux0 = NewMux(muxnum++, RADIX, SWITCH_ALLOC_MUX );
+		printf("switch mux0 = %i\n", mux0);
 		switches[index]->output_mux[i] = mux0;
 	}
 
