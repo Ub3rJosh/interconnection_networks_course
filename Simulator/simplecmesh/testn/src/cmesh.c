@@ -135,20 +135,20 @@ int id;
 	int dest_router, dest_xoffset, dest_yoffset;
 	int src_router, src_xoffset, src_yoffset;
 	int xidentity, diff, pos_skip, neg_skip;
-
+	
 	current_router = id/((2)*(RADIX));
 	// printf("current_router = %i\n", current_router);
 	cur_xoffset = FindXcord(current_router);
 	cur_yoffset = FindYcord(current_router);
-
+	
 	dest_router = *dest/CONC;
 	dest_xoffset = FindXcord(dest_router);
 	dest_yoffset = FindYcord(dest_router);
-
+	
 	src_router = *src/CONC;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
-
+	
 	demuxret = 0;
 	
 	router_calls++;
@@ -157,7 +157,7 @@ int id;
 		   *src, src_router,
 		   *dest, dest_router,
 		    id);
-		
+	
 	if (*src == *dest){
 		printf("I am at the source! :)");
 		demuxret = 6;
@@ -211,13 +211,13 @@ int id;
 	
 	// Keep track of Router and Link utilization
 	// if(demuxret < (RADIX - 1) / 2){	// +x, -x, +y, -y
-	if(demuxret <= 5){	// +x, -x, +y, -y
+	if(demuxret <= (RADIX - 1 - CONC)){
 		hoptype[1]++;
-		printf("doing other thing here\n");
+		printf("Routing to dest.\n");
 	}
 	else{ 				// OPORT
 		hoptype[0]++;
-		printf("injecting here\n");
+		printf("At dest, injecting here.\n");
 	}
 	
 	printf("returning demux=%i for id=%i\n", demuxret, id);
