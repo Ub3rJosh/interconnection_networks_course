@@ -461,6 +461,7 @@ char** argv;
 	}
 
 	// Interconnect the routers
+	printf("RADIX = %i\n", RADIX);
 	for( i = 0; i < MAX_ROUTERS; i++ )
 	{
 		// This is a TORUS Topology, Does include wrap around links

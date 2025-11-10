@@ -7,31 +7,13 @@
 #define NPORTPKTS				1		/* Number of Packets Per Port at the Node	*/
 #define BPORTPKTS				1
 
-#define CONC					(1)  // is this the bristling factor?
-
+#define CONC					(1)
 #define XNUMPERDIM				(4)
 #define YNUMPERDIM				(4)
-
-// include k dimensions where N = pow(2, k) = XNUMPERDIM * YNUMPERDIM
-#define K_max					(10)
-#define K						(4)  // (where k <= K_max) the dimensionality of the hypercube
-#define X0_NUMPERDIM			(2)
-#define X1_NUMPERDIM			(2)
-#define X2_NUMPERDIM			(2)
-#define X3_NUMPERDIM			(2)
-#define X4_NUMPERDIM			(2)
-#define X5_NUMPERDIM			(2)
-#define X6_NUMPERDIM			(2)
-#define X7_NUMPERDIM			(2)
-#define X8_NUMPERDIM			(2)
-#define X9_NUMPERDIM			(2)
-
-#define MAX_ROUTERS				(XNUMPERDIM * YNUMPERDIM)
+#define MAX_ROUTERS				(XNUMPERDIM*YNUMPERDIM)
 #define MAX_CPU					(MAX_ROUTERS*CONC)
-#define MAX_POSSIBLE_CPUS		(1024)
-// #define RADIX					(4+CONC)
-#define RADIX					(K + CONC)  // k + CONC
-#define DIMENSION1				(4)			//power of 2 required to reach max_nodes 
+#define RADIX					(4+CONC)
+#define DIMENSION1				(4)			//power of 2 required to reach max_nodes
 
 /************************************************************************************/
 /******************************* CONSTANTS USED *************************************/
@@ -63,7 +45,7 @@
 #define INTERARRIVAL		1.0		/* Inter-arrival Mean Time			*/
 #define NPKTS				10000  	/* Number of Packets Simulated		*/
 #define NCYCLES				10000.0	/* Number of Cycles Simulated		*/
-#define VC					4		/* Virtual Channels					*/
+#define VC					2		/* Virtual Channels					*/
 
 #define INJECTTIME			1.0		/* Reduced Cycle Time				*/
 #define BERNOULLI_RATE		0.2		/* Default Bernoulli Rate			*/
@@ -71,8 +53,8 @@
 #define EXPONENTIAL_RATE	1/POISSION_RATE
 									/* Inter-arrival Rate 				*/
 
-// #define PHITSZ				8		/* Number of bits per phit			*/
-#define PHITSZ				32		/* Number of bits per phit			*/
+#define PHITSZ				8		/* Number of bits per phit			*/
+// #define PHITSZ				32		/* Number of bits per phit			*/
 
 #define FLITSZ				4		/* Number of phits in a Flit		*/
 #define IBUFSZ				16		/* Buffer Size in phits				*/
@@ -170,16 +152,8 @@ int Tornado(int);
 /********************************** ROUTING FUNCTIONS *******************************/
 /************************************************************************************/
 
-int valiant_route(int, int);
-int romm_route(int, int);
-int hypercube_find_k(int, int);
-int hypercube_route(int, int);
+int valiant_route( int, int );
+int romm_route( int, int);
 
 extern int CURRENT_ROUTE;
 extern int VIRTUAL;
-
-
-// define router struct for mapping w/ hypercube
-// struct CPU_DICT {char code[K]; int cpu};  // {key; value}
-// struct cpu_dict CPU_MAPPING[K];
-
