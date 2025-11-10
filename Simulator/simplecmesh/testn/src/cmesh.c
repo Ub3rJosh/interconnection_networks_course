@@ -463,28 +463,40 @@ char** argv;
 	}
 
 	// Interconnect the routers
-	int link_core, core_x, core_y;
+	int link_core;
+	int core, core_x, core_y;
 	int row_x, temp_x;
 	int col_y, temp_y;
-	for(int core = 0; core < MAX_ROUTERS; core++){
-		// This is a FLATTENED BUTTERFLY Topology
-		// Do the connections in +x and -x directions
-		// Do the connections in +y and -y directions
-		core_x = FindXcord()
+	int link_i;  // for counting which link to do
+	
+	// link across row (for KxK 2D mesh core layout)
+	for (int core = 0; core < MAX_CPU; core++){
+		link_i = 0;
+		// printf("\n\ncore = %i\n", core);
+		core_x = FindXcord(core);
+		core_y = FindYcord(core);
 		
-		for (int y = 0; y < YNUMPERDIM; y++){
-			for (int x = 0; x < XNUMPERDIM; x++){
-				// do row-wise connections
-				if (y == 0){
-					temp_x = x;
-				}
-				else{
-					temp_x = core % (K * y);
-				}
-				row_x = core - temp_x + k;
-				// printf("row_x = %i", row_x);
-				link_core = GetSwitchId(row_x, )
-				printf("\n");
+		// row
+		for (int x = 0; x < K; x++){
+			if (x != core_x){
+				row_x = core_y * K + x;
+				// printf("core_x = %i, row_x = %i\n", core_x, row_x);
+				
+				NetworkConnect(switches[core_x]->output_buffer[link_i], switches[row_x]->input_demux[link_i], 0, 0);
+				DemuxCreditBuffer(switches[row_x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
+				link_i++;
+			}
+		}
+		
+		// column
+		for (int y = 0; y < K; y++){
+			if (y != core_y){
+				col_y = y * K + core_x;
+				// printf("core_y = %i, row_y = %i\n", core_y, col_y);
+				
+				NetworkConnect(switches[core_y]->output_buffer[link_i], switches[col_y]->input_demux[link_i], 0, 0);
+				DemuxCreditBuffer(switches[col_y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
+				link_i++;
 			}
 		}
 	}

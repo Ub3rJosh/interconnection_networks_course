@@ -11,10 +11,11 @@
 #define XNUMPERDIM				(4)
 #define YNUMPERDIM				(4)
 #define K						(4)  // cores per dim
-#define MAX_ROUTERS				(XNUMPERDIM*YNUMPERDIM)
+// #define MAX_ROUTERS				(XNUMPERDIM*YNUMPERDIM)
+#define MAX_ROUTERS				(K * K)
 #define MAX_CPU					(MAX_ROUTERS*CONC)
-#define RADIX					(4+CONC)
-// #define RADIX					(2 * (XNUMPERDIM - 1) + CONC)
+// #define RADIX					(4+CONC)
+#define RADIX					(2 * (K - 1) + CONC)
 #define DIMENSION1				(4)			//power of 2 required to reach max_nodes
 
 /************************************************************************************/
