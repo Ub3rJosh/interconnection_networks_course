@@ -1808,7 +1808,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		demux0 = NewDemux(demuxnum++, VC, router, LOOKAHEAD_DEMUX );
-		printf("look-ahead demux0 = %i\n", demux0);
+		// printf("look-ahead demux0 = %i\n", demux0);
 		switches[index]->input_demux[i] = demux0;
 	}
 
@@ -1816,7 +1816,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		demux0 = NewDemux(demuxnum++, RADIX, router, REGULAR_DEMUX );
-		printf("regular demux0 = %i\n", demux0);
+		// printf("regular demux0 = %i\n", demux0);
 		switches[index]->output_demux[i] = demux0;
 	}
 
@@ -1824,7 +1824,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		mux0 = NewMux(muxnum++, VC, VIRTUAL_ALLOC_MUX );
-		printf("routing/virtual mux0 = %i\n", mux0);
+		// printf("routing/virtual mux0 = %i\n", mux0);
 		switches[index]->input_mux[i] = mux0;
 	}
 
@@ -1832,7 +1832,7 @@ void intraconnections(int index)
 	for( i = 0; i < (RADIX); i++ )
 	{
 		mux0 = NewMux(muxnum++, RADIX, SWITCH_ALLOC_MUX );
-		printf("switch mux0 = %i\n", mux0);
+		// printf("switch mux0 = %i\n", mux0);
 		switches[index]->output_mux[i] = mux0;
 	}
 
@@ -1846,6 +1846,7 @@ void intraconnections(int index)
 			/* LookAhead Router Demux to Input Virtual Channel Buffers */
 			buf0 = NewBuffer(bufnum++, IBUFSZ, INPUT_BUFFER);
 			switches[index]->input_buffer[k] = buf0;
+			printf("connecting buffer = %i to switch[index]->input_buffer[k] = %i\n", buf0, switches[index]->input_buffer[k]);
 			NetworkConnect(switches[index]->input_demux[i], switches[index]->input_buffer[k], j, 0);
 			BufferCreditDemux(switches[index]->input_buffer[k],switches[index]->input_demux[i]);
 
