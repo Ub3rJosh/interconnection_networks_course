@@ -1143,7 +1143,7 @@ int GetSwitchId(int , int);			/* Get the switch ID from co-ordniates		*/
 int power(int, int);
 
 //************************************ Routing Function *******************************//
-int router(src,dest,id)
+int router(src, dest, id)
 int *src;
 int *dest;
 int id;
@@ -1197,7 +1197,7 @@ int id;
 		YS__errmsg("Routing: Should not get here\n");
 	}
 
-	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
+	printf("Routing from %i to %i with demuxret=%i\n", src, dest, demuxret);
 
 	// Keep track of Router and Link utiliztion
 	if(demuxret < XNUMPERDIM)	// +x, -x, +y, -y  (assuming square layout!)
@@ -2213,7 +2213,6 @@ int hypercube_route(int source, int dest){
 	int s_code[K];
 	int d_code[K];
 	int temp_code[K];
-	
 	memcpy(s_code, CORE_MAPPING[source], K * sizeof(int));
 	memcpy(d_code, CORE_MAPPING[ dest ], K * sizeof(int));
 	memcpy(temp_code, CORE_MAPPING[source], K * sizeof(int));

@@ -172,14 +172,8 @@ int Tornado(int);
 
 int valiant_route(int, int);
 int romm_route(int, int);
-int hypercube_find_k(int, int);
 int hypercube_route(int, int);
 
 extern int CURRENT_ROUTE;
 extern int VIRTUAL;
-
-
-// define router struct for mapping w/ hypercube
-// struct CPU_DICT {char code[K]; int cpu};  // {key; value}
-// struct cpu_dict CPU_MAPPING[K];
 
