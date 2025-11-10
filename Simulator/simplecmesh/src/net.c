@@ -1030,18 +1030,16 @@ void YS__HeadEvent()
 	double	  x = 0.0;
 
 	pkt = (PACKET*)ActivityGetArg(ME);
+   
+   printf("\nrouter() call: pkt=%p, src=%p, dest=%p, id=%d\n", pkt, &(pkt->data.srccpu), &(pkt->data.destcpu), demux->id);
+   printf("src=%i, dest=%i, id=%i\n", &(pkt->data.srccpu), &(pkt->data.destcpu), demux->id);
+   //	if(pkt->data.seqno == 203)
+   //	{
+   //		printf("IM THE PACKET (203)\n");//, Event_id = %d\n",  pkt->headev->id); //, Event_name = %s\n", pkt->headev->id, pkt->headev->name);
+         //if(GetSimTime() > 35)
+            //YS__EventListPrint();
+   //	}
 
-//	if(pkt->data.seqno == 203)
-//	{
-//		printf("IM THE PACKET (203)\n");//, Event_id = %d\n",  pkt->headev->id); //, Event_name = %s\n", pkt->headev->id, pkt->headev->name);
-		//if(GetSimTime() > 35)
-			//YS__EventListPrint();
-//	}
-
-
-	//printf("src %d dest %d module %d seqno %d type %d size %d Event %d\n",
-	//	pkt->data.srccpu, pkt->data.destcpu, pkt->module->id, pkt->data.seqno,
-	//	pkt->data.pkttype, pkt->data.packetsize, EventGetState() );
 
 	switch (EventGetState()) {
 
@@ -1049,7 +1047,7 @@ void YS__HeadEvent()
 			iport = (IPORT*)pkt->module;
 			if (SemaphoreValue(iport->netrdy) <= 0) {
 				pkt->data.blktime = pkt->data.blktime - YS__Simtime;
-				//printf("Waiitng for sema iport\n");
+				printf("YS__HeadEvent() -> Waitng for sema iport\n");
 				EventReschedSema(iport->netrdy,Before_Next_Module);
 				return;
 			}
@@ -1067,7 +1065,8 @@ void YS__HeadEvent()
 		case Next_Module: label_Next_Module: {
 			if ( waitontail == WAIT && pkt->headbuf != pkt->tailbuf) {
 				TRACE_HEAD_chkwft;
-				//printf("Wait on tail\n");
+				printf("YS__HeadEvent() -> Wait on tail\n");
+            printf("head = %p, tail = %p", pkt->headbuf, pkt->tailbuf);
 				EventSetState(ME, Next_Module);
 				pkt->waitingfortail = 1;
 				return;
@@ -1076,27 +1075,31 @@ void YS__HeadEvent()
 			TRACE_HEAD_nextmod;
 			curmod = pkt->module;
 			curtype = curmod->type;
-			//printf(" cur mod %d cur type %d \n", curmod->id, curtype);
+			printf("YS__HeadEvent() -> cur mod %d cur type %d \n", curmod->id, curtype);
 
 			if (curtype == BUFFERTYPE) {
-				//printf("Checking for buffer\n");
+            printf("!!\n");
+				printf("YS__HeadEvent() -> Checking for buffer -> \n");
+            printf("(BUFFER*)curmod) = %p\n", (BUFFER*)curmod);
+            printf("BUFFER=%d, next_module=%p\n", buf->id, buf->nextmodule);
 				pkt->module = ((BUFFER*)curmod)->nextmodule;
-				//printf("In Buffer %d\n", pkt->module->id);
+            printf("packet->module = %p\n, ", pkt->module);
+				printf("In Buffer %d\n", pkt->module->id);
 			}
          	else if (curtype == MUXTYPE) {
          		pkt->module = ((MUX*)curmod)->nextmodule;
-  				//printf("In MuX %d\n", pkt->module->id);
+  				printf("YS__HeadEvent() -> In MuX %d\n", pkt->module->id);
 			}
          	else if (curtype == DEMUXTYPE) {
 				pkt->module = *((((DEMUX*)(curmod))->nextmodule)+(pkt->index));
-				//printf("In DEMUX %d index %d\n", pkt->module->id, pkt->index);
+				printf("YS__HeadEvent() -> In DEMUX %d index %d\n", pkt->module->id, pkt->index);
 				TRACE_HEAD_demuxport;
 			}
 			else if (curtype == IPORTTYPE) {
 				pkt->module = ((IPORT*)curmod)->nextmodule;
-				//printf("In IPORT %d\n", pkt->module->id);
+				printf("YS__HeadEvent() -> In IPORT %d\n", pkt->module->id);
 			}
-			else YS__errmsg("Invalid current module type");
+			else YS__errmsg("YS__HeadEvent() -> Invalid current module type");
 
 			/********************* LOOKAHEAD ROUTER & REGULAR ROUTER ***************************/
 			if (pkt->module->type == DEMUXTYPE) {
@@ -1104,7 +1107,7 @@ void YS__HeadEvent()
 				TRACE_HEAD_nextdemux1;
 
 				pkt->data.route = (demux->router)(&(pkt->data.srccpu),&(pkt->data.destcpu),demux->id);
-				//printf("returning %d in demux %d\n", pkt->data.route, demux->id);
+				printf("YS__HeadEvent() -> returning %d in demux %d\n", pkt->data.route, demux->id);
 
 				/* Check if the demux is the look ahead router */
 				if(demux->demuxtype == LOOKAHEAD_DEMUX) {
@@ -1122,7 +1125,7 @@ void YS__HeadEvent()
 
 				TRACE_HEAD_nextdemux2;
 				EventReschedTime(demuxdelay, Next_Module);
-				//printf("Route %d vcindex %d\n", pkt->data.route, pkt->data.vcindex);
+				printf("YS__HeadEvent() -> Route %d vcindex %d\n", pkt->data.route, pkt->data.vcindex);
 
 				return;
 			}
@@ -1130,19 +1133,19 @@ void YS__HeadEvent()
 			/********************* VIRTUAL CHANNEL & SWITCH ALLOCATION *************************/
 			else if (pkt->module->type == MUXTYPE) {
 				mux = (MUX*)(pkt->module);
-				//printf("MUX id %d\n", mux->id);
+				printf("YS__HeadEvent() -> MUX id %d\n", mux->id);
 				TRACE_HEAD_nextmux;
 
 				/* Regular Switching Required for all Flits (Head and Body Flits) */
 				if( mux->muxtype == SWITCH_ALLOC_MUX ) {
-					//printf("SMUX id %d\n", mux->id);
+					printf("YS__HeadEvent() -> SMUX id %d\n", mux->id);
 					EventReschedTime(0.0, Switch_Mux);
 					return;
 				}
 
 				/* Else, check for routing/VA if head, else only for credit */
 				if( pkt->data.pkttype == 0 && mux->muxtype == VIRTUAL_ALLOC_MUX ) {
-					//printf("VMUX id %d\n", mux->id);
+					printf("YS__HeadEvent() -> VMUX id %d\n", mux->id);
 					EventReschedTime(0.0, Route_Mux);
 					return;
 				}
@@ -1155,9 +1158,9 @@ void YS__HeadEvent()
 
 			/*************************** BUFFER ALLOCATION **************************************/
 			else if (pkt->module->type == BUFFERTYPE) {
-				//printf("BUF id %d\n", pkt->module->id);
+				printf("YS__HeadEvent() -> BUF id %d, ", pkt->module->id);
 				buf = (BUFFER*)(pkt->module);
-				//printf("BUF id %d\n", buf->id);
+				printf("BUF id %d\n", buf->id);
 				TRACE_HEAD_nextbuf;
 
 				if (pkt->headbuf->type == IPORTTYPE)
@@ -1188,7 +1191,7 @@ void YS__HeadEvent()
          	}
 
 			else if (pkt->module->type == OPORTTYPE) {
-				//printf("in oport\n");
+				printf("YS__HeadEvent() -> in oport\n");
 				oport = (OPORT*)(pkt->module);
 				TRACE_HEAD_nextoport;
 
@@ -1213,7 +1216,7 @@ void YS__HeadEvent()
 				return;
 			}
 
-			else YS__errmsg("Invalid network module type");
+			else YS__errmsg("YS__HeadEvent() -> Invalid network module type");
 		}
 
 		case Route_Mux: {
@@ -1228,11 +1231,11 @@ void YS__HeadEvent()
 
 		case Virtual_Mux: {
 			mux = (MUX*)pkt->module;
-			//printf("MUX %d %d\n", mux->type, mux->id);
+			printf("YS__HeadEvent() -> MUX %d %d, ", mux->type, mux->id);
 			demux_trace = (DEMUX*)(mux->nextmodule);
-			//printf("DEMUX %d %d\n", demux_trace->type, demux_trace->id);
+			printf("DEMUX %d %d, ", demux_trace->type, demux_trace->id);
 			mux_trace = (MUX*)(*((demux_trace->nextmodule) + pkt->data.route));
-			//printf("Radix issue at VMUx %d\n", mux_trace->id);
+			printf("Radix issue at VMUx %d\n", mux_trace->id);
 			buf_trace = (BUFFER*)(mux_trace->nextmodule);
 
 			//x = fmod(YS__Simtime, flitdelay);
@@ -1240,7 +1243,7 @@ void YS__HeadEvent()
 			//	EventReschedTime(delta, Virtual_Mux );
 			//	return;
 			//}
-
+         
 			pkt->data.vastage++;
 			do {
 				k = RandUniformInt(0, VC - 1 );
@@ -1254,12 +1257,12 @@ void YS__HeadEvent()
 						return;
 					}
 					SemaphoreDecr(buf_trace->va_alloc);
-
+               
 					/* When you run out of VCs */
 					if( SemaphoreValue(buf_trace->bufva_sema) > 0 ) {
 						SemaphoreDecr(buf_trace->bufva_sema);
 					}
-
+               
 					/* Setup all data on the output buffer */
 					buf_trace->vc_data.input_vc[k] = pkt->data.vcindex;
 					buf_trace->vc_data.input_seqno[k] = pkt->data.seqno;
@@ -1268,10 +1271,10 @@ void YS__HeadEvent()
 					buf_trace->vc_data.keep_track++;
 					if( buf_trace->vc_data.keep_track >= VC )
 						buf_trace->vc_data.keep_track = 0;
-
+               
 					/* Setup all data on the input buffer */
 					pkt->data.vcindex = k;
-
+               
 					newbuf = (BUFFER*)pkt->carrybuf;
 					newbuf->output_vc = pkt->data.vcindex;
 					newbuf->output_port = pkt->data.route;
@@ -1279,13 +1282,13 @@ void YS__HeadEvent()
 					newbuf->output_credit = buf_trace->vc_data.input_credit[k];
 					newbuf->output_alloc = -1;
 					newbuf->outputbuf = (MODULE*)buf_trace;
-
+               
 					//if( buf_trace->id == 29 )
 					/*if( (buf_trace->id == 149) || (buf_trace->id == 171) )*/
 					//printf("Allocating VC %d pkt %d outputbuf %d credit %d time %g inputbuf %d\n",
 					//k, pkt->data.seqno, buf_trace->id, buf_trace->vc_data.input_credit[k],
 					//YS__Simtime, newbuf->id );
-
+               
 					EventReschedTime(VIRTUAL_ALLOC_DELAY, Release_Virtual_Alloc);
 					return;
 				}
@@ -1294,8 +1297,7 @@ void YS__HeadEvent()
 			}while( k < VC );
 
 			//if( buf_trace->id == 29)
-			//printf("Waiting at %d for VC Alloc %d seq %d\n", newbuf->id, buf_trace->id,
-			//			pkt->data.seqno);
+			printf("YS__HeadEvent() -> Waiting at %d for VC Alloc %d seq %d\n", newbuf->id, buf_trace->id, pkt->data.seqno);
 			EventReschedSema(buf_trace->bufva_sema, Virtual_Mux);
 			return;
 		}
@@ -1328,8 +1330,7 @@ void YS__HeadEvent()
 
 			ret = YS__Congestion(buf, buf_trace, pkt);
 			if( ret != 0 ) {
-				//printf("NO CREDIT buf %d pkt %d time %g\n",
-				//	buf->id, pkt->data.seqno, YS__Simtime);
+				printf("YS__HeadEvent() -> NO CREDIT buf %d pkt %d time %g\n", buf->id, pkt->data.seqno, YS__Simtime);
 				EventReschedSema(buf->bufcredit_sema, Credit_After_Mux);
 				return;
 			}
@@ -1343,8 +1344,7 @@ void YS__HeadEvent()
 				newbuf->vc_data.input_credit[buf->output_vc] =
 					newbuf->vc_data.input_credit[buf->output_vc] - 1;
 				EventReschedTime(0.0, Switch_Mux);
-				//printf("Consuming credit %d buf %d newbuf %d pkt seq %d time %g\n",
-				//	newbuf->vc_data.input_credit[buf->output_vc], buf->id, newbuf->id, pkt->data.seqno, YS__Simtime);
+				printf("YS__HeadEvent() -> Consuming credit %d buf %d newbuf %d pkt seq %d time %g\n", newbuf->vc_data.input_credit[buf->output_vc], buf->id, newbuf->id, pkt->data.seqno, YS__Simtime);
 				return;
 			}
 			else {
@@ -1416,8 +1416,7 @@ void YS__HeadEvent()
 
 		case Wakeup_Mux: {
 			mux = (MUX*)pkt->module;
-			//printf("In Wake Mux %d at time %g pkt %d Sema %d\n",
-			//mux->id, YS__Simtime, pkt->data.seqno, pkt->data.pkttype );
+			printf("YS__HeadEvent() -> In Wake Mux %d at time %g pkt %d Sema %d\n", mux->id, YS__Simtime, pkt->data.seqno, pkt->data.pkttype );
 
 			TRACE_HEAD_muxwakeup;
 
@@ -1441,7 +1440,7 @@ void YS__HeadEvent()
 			// Possible cover for the problem but does not actually figure out why it happens
 			if (buf->type == OPORTTYPE) {
             	EventSetDelFlag();
-				printf("OPORT should not be here: pkt_seqnum %d\n", pkt->data.seqno);
+				printf("YS__HeadEvent() -> OPORT should not be here: pkt_seqnum %d\n", pkt->data.seqno);
             	return;
             }
 
@@ -1462,7 +1461,7 @@ void YS__HeadEvent()
 			}
 
 			if (pkt->module->type == OPORTTYPE) {
-				//printf("At opoort\n");
+				printf("YS__HeadEvent() -> At opoort\n");
 				TRACE_HEAD_tooport;
             	pkt->headev = NULL;
             	pkt->headbuf = pkt->module;
@@ -1478,12 +1477,12 @@ void YS__HeadEvent()
 				TRACE_HEAD_athead;
 				EventReschedTime(delta,Next_Module);
 
-				/*if(pkt->data.seqno == 203)
+				if(pkt->data.seqno == 203)  // this has GOT to be here for a reason
 				{
 					printf("IM THE PACKET (203), Event_id = %d",  pkt->headev->id); //, Event_name = %s\n", pkt->headev->id, pkt->headev->name);
 					if(GetSimTime() > 35)
 						YS__EventListPrint();
-				}*/
+				}
 
 				return;
 			}

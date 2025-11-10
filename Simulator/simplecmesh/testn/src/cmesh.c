@@ -117,11 +117,11 @@ struct SWITCHSET{
 switchptr switches[MAX_ROUTERS];
 
 /* Local Functions for Torus Network */
-int FindXcord(int );					/* Find the x co-ordinate					*/
-int FindYcord(int );					/* Find the y co-ordinate					*/
-void intraconnections(int );		/* Create the switches						*/
-int GetSwitchId(int , int );			/* Get the switch ID from co-ordniates		*/
-int power(int,int);
+int FindXcord(int);					/* Find the x co-ordinate					*/
+int FindYcord(int);					/* Find the y co-ordinate					*/
+void intraconnections(int);		/* Create the switches						*/
+int GetSwitchId(int, int);			/* Get the switch ID from co-ordniates		*/
+int power(int, int);
 
 //************************************ Routing Function *******************************//
 int router(src,dest,id)
@@ -136,6 +136,7 @@ int id;
 	int xidentity, diff, pos_skip, neg_skip;
 
 	current_router = id/((2)*(RADIX));
+	// printf("current_router = %i\n", current_router);
 	cur_xoffset = FindXcord(current_router);
 	cur_yoffset = FindYcord(current_router);
 
@@ -147,78 +148,99 @@ int id;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
 
-	// demuxret = 0;
-
+	demuxret = 0;
+	
 	
 	// hypercube routing
+	printf("hypercube_route() called\n");
 	int tempcpu = route_hypercube(*src, *dest);
 	int tempcpu_x = FindXcord(tempcpu);
 	int tempcpu_y = FindYcord(tempcpu);
+	printf("attempting to route from cpu (%i, %i) to cpu (%i, %i)\n", cur_xoffset, cur_yoffset, tempcpu_x, tempcpu_y);
 	
 	// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
 	if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
 		//determine demuxret
 		int row_x = src_xoffset;
-		for (int demuxret = 0; demuxret < K; demuxret++){
+		// printf("row_x = %i\n", row_x);
+		for (int demux = 0; demux < (K - 1) / 2; demux++){
+			printf("demux = %i, row_x = %i\n", demux, row_x);
 			if (row_x == tempcpu_x){
-				return demuxret;
+				tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
+				printf("Routing from %i to %i (interemediate step!) using demux %i.\n", current_router, tempcpu, demux);
+				demuxret = demux;
+				break;
 			}
 			row_x++;
 		}
 	}
-	// if routing along x, demuxret in [3, 4, 5]
+	// if routing along x, demuxret in [(K - 1) / 2, ..., K]
 	else{  // if the y-coords don't line up then we've only routed in x
 		//determine demuxret
 		int col_y = src_yoffset;
-		for (int demuxret = 0; demuxret < K; demuxret++){
+		for (int demux = (K - 1) / 2; demux < K; demux++){
+			printf("demux = %i, col_y = %i\n", demux, col_y);
 			if (col_y == tempcpu_y){
-				return demuxret;
+				tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
+				printf("Routing from %i to %i (final step!) using demux %i.\n", current_router, tempcpu, demux);
+				demuxret = demux;
+				break;
 			}
 			col_y++;
 		}
 	}
 	
-	
-	// // DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
-	// if(current_router == dest_router) // Rout to the OPORT
-	// {
-	// 	// demuxret = 4 + *dest%CONC;
-	// 	demuxret = RADIX + *dest%CONC;
-	// }
-	// else if(cur_xoffset != dest_xoffset) // ROUTE x
-	// {
-	// 	if(cur_xoffset < dest_xoffset)
-	// 		demuxret = 0;
-	// 	else if(cur_xoffset > dest_xoffset)
-	// 		demuxret = 1;
-	// 	else
-	// 		YS__errmsg("Routing: Should not get here x\n");
-
-	// }
-	// else if(cur_yoffset != dest_yoffset) // ROUTE y
-	// {
-	// 	if(cur_yoffset < dest_yoffset)
-	// 		demuxret = 2;
-	// 	else if(cur_yoffset > dest_yoffset)
-	// 		demuxret = 3;
-	// 	else
-	// 		YS__errmsg("Routing: Should not get here y\n");
-	// }
-	// else
-	// {
-	// 	YS__errmsg("Routing: Should not get here\n");
-	// }
-
-	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
-
 	// Keep track of Router and Link utiliztion
-	if(demuxret < 4)	// +x, -x, +y, -y
+	if(demuxret < RADIX - CONC)	// +x, -x, +y, -y
 		hoptype[1]++;
 	else 				// OPORT
 		hoptype[0]++;
-
+	
+	printf("returning demux=%i for id=%i\n", demuxret, id);
 	return demuxret;
 }
+	
+	
+// 	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
+// 	if(current_router == dest_router) // Rout to the OPORT
+// 	{
+// 		// demuxret = 4 + *dest%CONC;
+// 		demuxret = RADIX + *dest%CONC;
+// 	}
+// 	else if(cur_xoffset != dest_xoffset) // ROUTE x
+// 	{
+// 		if(cur_xoffset < dest_xoffset)
+// 			demuxret = 0;
+// 		else if(cur_xoffset > dest_xoffset)
+// 			demuxret = 1;
+// 		else
+// 			YS__errmsg("Routing: Should not get here x\n");
+
+// 	}
+// 	else if(cur_yoffset != dest_yoffset) // ROUTE y
+// 	{
+// 		if(cur_yoffset < dest_yoffset)
+// 			demuxret = 2;
+// 		else if(cur_yoffset > dest_yoffset)
+// 			demuxret = 3;
+// 		else
+// 			YS__errmsg("Routing: Should not get here y\n");
+// 	}
+// 	else
+// 	{
+// 		YS__errmsg("Routing: Should not get here\n");
+// 	}
+
+// 	printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
+
+// 	// Keep track of Router and Link utiliztion
+// 	if(demuxret < 4)	// +x, -x, +y, -y
+// 		hoptype[1]++;
+// 	else 				// OPORT
+// 		hoptype[0]++;
+
+// 	return demuxret;
+// }
 
 //************************************ Send Process *************************************//
 void UserEventS()
@@ -397,6 +419,7 @@ void UserEventR()
 	}
 
 	EventReschedSema(OPortSemaphore(outport));
+	printf("Packet recieved!!\n");
 
 	return;
 }
@@ -555,6 +578,7 @@ char** argv;
 				row_x = core_y * K + x;
 				// printf("core_x = %i, row_x = %i\n", core_x, row_x);
 				
+				printf("linking (%i, %i) to (%i, %i) via %i\n", core_x, core_y, row_x, core_y, link_i);
 				NetworkConnect(switches[core_x]->output_buffer[link_i], switches[row_x]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[row_x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
 				link_i++;
@@ -567,6 +591,7 @@ char** argv;
 				col_y = y * K + core_x;
 				// printf("core_y = %i, row_y = %i\n", core_y, col_y);
 				
+				printf("linking (%i, %i) to (%i, %i) via %i\n", core_x, core_y, core_x, col_y, link_i);
 				NetworkConnect(switches[core_y]->output_buffer[link_i], switches[col_y]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[col_y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
 				link_i++;
