@@ -86,6 +86,7 @@ int *dest;
 int id;
 {
 	printf("router() called!\n");
+	printf("source = %i, dest = %i, (id=%i)\n", src, dest, id);
 	int demuxret, skipcount, k, conc_pair, i;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
