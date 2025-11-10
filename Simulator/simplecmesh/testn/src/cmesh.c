@@ -1214,6 +1214,8 @@ void UserEventS()
 
 	index = ActivityArgSize(ME);
 	inport = (IPORT*)ActivityGetArg(ME);
+	
+	printf("sending event function: xsrc=%i, ysrc=%i, x_dest=%i, y_dest=%i, pkt=%i\n", xsrc, ysrc, xdest, ydest, pkt);
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
 	switch (EventGetState()) {
@@ -1376,6 +1378,7 @@ void UserEventR()
 	}
 
 	EventReschedSema(OPortSemaphore(outport));
+	printf("PACKET RECIEVED\n");
 
 	return;
 }
