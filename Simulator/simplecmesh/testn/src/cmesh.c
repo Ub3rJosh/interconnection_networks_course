@@ -1,6 +1,7 @@
 // Modified from Rice Parallel Testbed Simulator
-// Torus connections, mesh routing
+// Hypercube connections, mesh routing
 // Avinash Karanth, Ohio University
+// Modifications made by Joshua Maldonado, Ohio University
 
 #include "sim.h"
 #include <stdlib.h>
@@ -1143,12 +1144,68 @@ int GetSwitchId(int , int);			/* Get the switch ID from co-ordniates		*/
 int power(int, int);
 
 //************************************ Routing Function *******************************//
-// int router(src
-int router(int source, int dest){
-	// USE THE ROUTING FUNCTION!
-	int route_to = hypercube_route(source, dest);
-	printf("Routing from %i to %i", source, dest);
-	return route_to;
+int router(src,dest,id)
+int *src;
+int *dest;
+int id;
+{
+	int demuxret;
+	int current_router, cur_xoffset, cur_yoffset;
+	int dest_router, dest_xoffset, dest_yoffset;
+	int src_router, src_xoffset, src_yoffset;
+
+	current_router = id/((2)*(RADIX));
+	cur_xoffset = FindXcord(current_router);
+	cur_yoffset = FindYcord(current_router);
+
+	dest_router = *dest/CONC;
+	dest_xoffset = FindXcord(dest_router);
+	dest_yoffset = FindYcord(dest_router);
+
+	src_router = *src/CONC;
+	src_xoffset = FindXcord(src_router);
+	src_yoffset = FindYcord(src_router);
+
+	demuxret = 0;
+
+	// DOR: ROUTES AS A MESH, For Torus need to use the wrap around links
+	if(current_router == dest_router) // Rout to the OPORT
+	{
+		demuxret = XNUMPERDIM + *dest%CONC;  // assuming square layout!
+	}
+	else if(cur_xoffset != dest_xoffset) // ROUTE x
+	{
+		if(cur_xoffset < dest_xoffset)
+			demuxret = 0;
+		else if(cur_xoffset > dest_xoffset)
+			demuxret = 1;
+		else
+			YS__errmsg("Routing: Should not get here x\n");
+
+	}
+	else if(cur_yoffset != dest_yoffset) // ROUTE y
+	{
+		if(cur_yoffset < dest_yoffset)
+			demuxret = 2;
+		else if(cur_yoffset > dest_yoffset)
+			demuxret = 3;
+		else
+			YS__errmsg("Routing: Should not get here y\n");
+	}
+	else
+	{
+		YS__errmsg("Routing: Should not get here\n");
+	}
+
+	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
+
+	// Keep track of Router and Link utiliztion
+	if(demuxret < XNUMPERDIM)	// +x, -x, +y, -y  (assuming square layout!)
+		hoptype[1]++;
+	else 				// OPORT
+		hoptype[0]++;
+
+	return demuxret;
 }
 
 //************************************ Send Process *************************************//
