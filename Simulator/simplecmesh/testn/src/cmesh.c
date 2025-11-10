@@ -94,7 +94,7 @@ int id;
 	int xidentity, diff, pos_skip, neg_skip;
 
 	current_router = id/((2)*(RADIX));
-	printf("current_router = %i\n", current_router);
+	// printf("current_router = %i\n", current_router);
 	cur_xoffset = FindXcord(current_router);
 	cur_yoffset = FindYcord(current_router);
 
@@ -137,7 +137,7 @@ int id;
 		YS__errmsg("Routing: Should not get here\n");
 	}
 
-	// printf("Routing from %i to %i with demuxret=%i\n", src, dest, demuxret);
+	printf("Routing from %i to %i with demuxret=%i\n", src_router, dest_router, demuxret);
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion

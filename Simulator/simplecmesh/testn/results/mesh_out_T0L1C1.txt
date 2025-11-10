@@ -23,5 +23,5 @@ Average Network Hops: 3.5
 
 OPORT link: 2
 
-Program took: 0.001204 seconds
+Program took: 0.001184 seconds
 ******************** End *************************
