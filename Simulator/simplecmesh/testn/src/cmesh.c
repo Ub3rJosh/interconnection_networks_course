@@ -41,7 +41,7 @@ int route_hypercube(int source, int dest){
 	int source_x = FindXcord(source);
 	int source_y = FindYcord(source);
 	int dest_x = FindXcord(dest);
-	int dest_y = FindYcord(dest);
+	// int dest_y = FindYcord(dest);
 	
 	int tempcpu;  // keep legacy naming
 	
@@ -116,7 +116,7 @@ struct SWITCHSET{
 };
 switchptr switches[MAX_ROUTERS];
 
-/* Local Functions for Torus Network */
+/* Local Functions for Network */
 int FindXcord(int);					/* Find the x co-ordinate					*/
 int FindYcord(int);					/* Find the y co-ordinate					*/
 void intraconnections(int);		/* Create the switches						*/
@@ -150,13 +150,18 @@ int id;
 
 	demuxret = 0;
 	
+	printf("\nrouter() called!\n");
+	printf("source = %i, dest = %i, (router=%i), id=%i\n", *src, *dest, current_router, id);
+	
 	
 	// hypercube routing
 	printf("hypercube_route() called\n");
 	int tempcpu = route_hypercube(*src, *dest);
 	int tempcpu_x = FindXcord(tempcpu);
 	int tempcpu_y = FindYcord(tempcpu);
-	printf("attempting to route from cpu (%i, %i) to cpu (%i, %i)\n", cur_xoffset, cur_yoffset, tempcpu_x, tempcpu_y);
+	printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
+		src_router, cur_xoffset, cur_yoffset, 
+		dest_router, tempcpu_x, tempcpu_y);
 	
 	// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
 	if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
@@ -257,6 +262,9 @@ void UserEventS()
 
 	index = ActivityArgSize(ME);
 	inport = (IPORT*)ActivityGetArg(ME);
+	
+	printf("UserEventS() -> src = (%i, %i), dest = (%i, %i)\n", xsrc, ysrc, xdest, ydest);
+	printf("UserEventS() -> ");
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
 	switch (EventGetState()) {
@@ -282,53 +290,55 @@ void UserEventS()
 					return;
 				}
 
-				// Choose a Destination Node based on the traffec pattern
-				switch(Traffic) {
-					case 0: //Random
-							do {
-								dest = RandUniformInt(0, MAX_CPU - 1 );
-							}while(dest == index);
+				// // Choose a Destination Node based on the traffec pattern
+				// switch(Traffic) {
+				// 	case 0: //Random
+				// 			do {
+				// 				dest = RandUniformInt(0, MAX_CPU - 1 );
+				// 			}while(dest == index);
 
 
-							break;
-					case 1: // Non-Random/Hotspot
-							retval1 = RandBernoulli(0.25);
-							if( retval1 > 0 ) {
-								do {
-									dest = RandUniformInt(0, MAX_CPU - 1 );
-								}while(dest == index);
-							}
-							else {
-								do {
-									dest = RandUniformInt(0, MAX_CPU/4);
-								}while(dest == index);
-							}
-							break;
-					case 2:
-							dest = BitReversal(index);
-							break;
-					case 3:
-							dest = Butterfly(index);
-							break;
-					case 4:
-							dest = Complement(index);
-							break;
-					case 5:
-							dest = MatrixTranspose(index);
-							break;
-					case 6:
-							dest = PerfectShuffle(index);
-							break;
-					case 7:
-							dest = Neighbor(index);
-							break;
-					case 8:
-							dest = Tornado(index);
-							break;
-					default:
-							YS__errmsg("Traffic Type Undefined\n");
-							break;
-				}
+				// 			break;
+				// 	case 1: // Non-Random/Hotspot
+				// 			retval1 = RandBernoulli(0.25);
+				// 			if( retval1 > 0 ) {
+				// 				do {
+				// 					dest = RandUniformInt(0, MAX_CPU - 1 );
+				// 				}while(dest == index);
+				// 			}
+				// 			else {
+				// 				do {
+				// 					dest = RandUniformInt(0, MAX_CPU/4);
+				// 				}while(dest == index);
+				// 			}
+				// 			break;
+				// 	case 2:
+				// 			dest = BitReversal(index);
+				// 			break;
+				// 	case 3:
+				// 			dest = Butterfly(index);
+				// 			break;
+				// 	case 4:
+				// 			dest = Complement(index);
+				// 			break;
+				// 	case 5:
+				// 			dest = MatrixTranspose(index);
+				// 			break;
+				// 	case 6:
+				// 			dest = PerfectShuffle(index);
+				// 			break;
+				// 	case 7:
+				// 			dest = Neighbor(index);
+				// 			break;
+				// 	case 8:
+				// 			dest = Tornado(index);
+				// 			break;
+				// 	default:
+				// 			YS__errmsg("Traffic Type Undefined\n");
+				// 			break;
+				// }
+				
+				dest = 3;
 
 				seqno = index + MAX_CPU * (NPKTS - npkts);
 				measure[index]->send = measure[index]->send + 1;
@@ -346,6 +356,7 @@ void UserEventS()
 					pktdata->intercpu = tempcpu;
 					senddelay = PacketSend(pkt, inport, index, dest, i, pktsz, tempcpu);
 				}
+				return;
 
 		case 2: // Decide when this event will run next and reschedule it
 				injecttime[index] = injecttime[index] + inter;
@@ -419,7 +430,7 @@ void UserEventR()
 	}
 
 	EventReschedSema(OPortSemaphore(outport));
-	printf("Packet recieved!!\n");
+	// printf("Packet recieved!!\n");
 
 	return;
 }
@@ -612,9 +623,9 @@ char** argv;
 	{
 		for( j = 0; j < CONC; j++)
 		{
-			sprintf(namestr, "UserSend%d", i*CONC+j);
-			event = NewEvent(namestr,UserEventS,0);					/* Create sender process 0       */
-			ActivitySetArg(event,switches[i]->iport[j],i*CONC+j);	/* Pass process its id           */
+			sprintf(namestr, "UserSend%d", i * CONC + j);
+			event = NewEvent(namestr, UserEventS, 0);					/* Create sender process 0       */
+			ActivitySetArg(event, switches[i]->iport[j], i * CONC + j);	/* Pass process its id           */
   			ActivitySchedTime(event, 0.0, INDEPENDENT);				/* Schedule process              */
 		}
 	}
@@ -623,9 +634,9 @@ char** argv;
 	{
 		for( j = 0; j < CONC; j++)
 		{
-			sprintf(namestr, "UserRecv%d", i*CONC+j);
-			event = NewEvent(namestr,UserEventR,0);					/* Create sender process 0       */
-			ActivitySetArg(event,switches[i]->oport[j],i*CONC+j);	/* Pass process its id           */
+			sprintf(namestr, "UserRecv%d", i * CONC + j);
+			event = NewEvent(namestr, UserEventR, 0);					/* Create sender process 0       */
+			ActivitySetArg(event,switches[i]->oport[j], i * CONC + j);	/* Pass process its id           */
   			ActivitySchedTime(event, 0.0, INDEPENDENT);				/* Schedule process              */
 		}
 	}

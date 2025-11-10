@@ -20,3 +20,6 @@ To run Netsim:
    - Example: ./cmesh 4 1 5 10000 0
      - load of 0.15 for 10000 cycles and traffic pattern 0 which is uniform random
      - more information on these can be derrived from the topology file in /testn/src UserMain()
+
+
+./cmesh 4 1 5 1 0
