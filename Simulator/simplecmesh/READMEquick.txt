@@ -22,5 +22,4 @@ To run Netsim:
      - more information on these can be derrived from the topology file in /testn/src UserMain()
 
 
-./cmesh 4 1 5 1 0
-./cmesh 4 1 5 1 8
+./cmesh 4 1 5 1 0make clean && make && clear && ./cmesh 4 1 5 1 8
