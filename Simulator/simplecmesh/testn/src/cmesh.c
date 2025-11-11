@@ -87,8 +87,8 @@ int *dest;
 int id;
 {
 	router_calls++;
-	printf("\nrouter() called! (%i)\n", router_calls);
-	printf("source = %i, dest = %i, (id=%i)\n", *src, *dest, id);
+	printf("\nrouter(source=%i, dest=%i, id=%i) called! (%i)\n", *src, *dest, id, router_calls);
+	
 	int demuxret, skipcount, k, conc_pair, i;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
@@ -114,7 +114,7 @@ int id;
 	if(current_router == dest_router) // Rout to the OPORT
 	{
 		demuxret = 4 + *dest%CONC;
-		printf("At router! demuxret=%i", demuxret);
+		printf("At router! demuxret=%i\n", demuxret);
 	}
 	else if(cur_xoffset != dest_xoffset) // ROUTE x
 	{
@@ -144,13 +144,14 @@ int id;
 	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < RADIX - CONC - 1){	// +x, -x, +y, -y
+	// if(demuxret < RADIX - CONC - 1){	// +x, -x, +y, -y
+	if(demuxret < 4){	// +x, -x, +y, -y
 		hoptype[1]++;
-		printf("Not at dest yet.");
+		printf("Not at dest yet.\n");
 	}
 	else{ 				// OPORT
 		hoptype[0]++;
-		printf("At dest, injecting.");
+		printf("At dest, injecting.\n");
 	}
 	return demuxret;
 }
@@ -242,6 +243,7 @@ void UserEventS()
 							YS__errmsg("Traffic Type Undefined\n");
 							break;
 				}
+				dest = 8;
 
 				seqno = index + MAX_CPU * (NPKTS - npkts);
 				measure[index]->send = measure[index]->send + 1;
@@ -258,6 +260,19 @@ void UserEventS()
 					pktdata->packetsize = pktsz;
 					pktdata->intercpu = tempcpu;
 					senddelay = PacketSend(pkt, inport, index, dest, i, pktsz, tempcpu);
+					
+					printf("PACKET INFO (send)\n");
+					printf("pktdata->createtime = %i\n", pktdata->createtime);
+					printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
+					printf("pktdata->route      = %i\n", pktdata->route);
+					printf("pktdata->routeA     = %i\n", pktdata->routeA);
+					printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
+					printf("pktdata->switching  = %i\n", pktdata->switching);
+					printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
+					printf("pktdata->lnk        = %i\n", pktdata->lnk);
+					printf("pktdata->seqno      = %i\n", pktdata->seqno);
+					printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
+					printf("----------------------\n");
 				}
 
 		case 2: // Decide when this event will run next and reschedule it
@@ -295,12 +310,27 @@ void UserEventR()
 	if (OPortPackets(outport)) {
 		pkt = PacketReceive(outport);
 		pktdata = PacketGetData(pkt);
+		
+		// printf("PACKET INFO (received at time=%i)\n", SIMTIME);
+		printf("PACKET INFO (received)\n");
+		printf("pktdata->createtime = %i\n", pktdata->createtime);
+		printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
+		printf("pktdata->route      = %i\n", pktdata->route);
+		printf("pktdata->routeA     = %i\n", pktdata->routeA);
+		printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
+		printf("pktdata->switching  = %i\n", pktdata->switching);
+		printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
+		printf("pktdata->lnk        = %i\n", pktdata->lnk);
+		printf("pktdata->seqno      = %i\n", pktdata->seqno);
+		printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
+		printf("----------------------\n");
+		
 		if(pktdata->destcpu != index ) {
 			printf("Receiver %d\n", index);
 			YS__errmsg("Incorrect destination received\n");
 		}
 
-		//printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
+		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
@@ -549,7 +579,9 @@ char** argv;
 	}
 
 //********************************** Send and Recieve Events **********************************//
+	// int test_int = 1;
 	for( i = 0; i < MAX_ROUTERS; i++)
+	// for( i = 0; i < test_int; i++)
 	{
 		for( j = 0; j < CONC; j++)
 		{
@@ -561,6 +593,7 @@ char** argv;
 	}
 
 	for( i = 0; i < MAX_ROUTERS; i++)
+	// for( i = 0; i < test_int; i++)
 	{
 		for( j = 0; j < CONC; j++)
 		{
