@@ -1091,6 +1091,30 @@ int hypercube_k(int source, int dest){
 	}
 }
 
+/***************************** Routing Variations  *****************************/
+/************************************ hypercube ********************************/
+int hypercube_route(int source, int dest){
+	// get code of source and dest
+	int s_code[K];
+	int d_code[K];
+	int temp_code[K];
+	memcpy(s_code, CORE_MAPPING[source], K * sizeof(int));
+	memcpy(d_code, CORE_MAPPING[ dest ], K * sizeof(int));
+	memcpy(temp_code, CORE_MAPPING[source], K * sizeof(int));
+	
+	// route to first non-matching dimension
+	for (int k = 0; k < K; k++){
+		if (s_code[k] != d_code[k]){
+			temp_code[k] = 1 - temp_code[k];  // get conjugate
+			break;  // leave loop now that we've found the next core's code
+		}
+	}
+	
+	// get core corresponding to temp_code (keep legacy naming of the return)
+	int tempcpu = read_binary(temp_code);
+	return tempcpu;
+}
+
 /* Measurement Structure */
 typedef struct MEASURE MEASURE;
 typedef struct MEASURE *measureptr;
@@ -1165,11 +1189,12 @@ int *src;
 int *dest;
 int id;
 {
-	printf("running ->  router(source = %i, dest = %i, id=%i)\n", src, dest, id);
+	// printf("running ->  router(source = %i, dest = %i, id=%i)\n", src, dest, id);
 	int demuxret;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
 	int src_router, src_xoffset, src_yoffset;
+	int tempcpu, tempcpu_x, tempcpu_y;
 
 	current_router = id/((2)*(RADIX));
 	cur_xoffset = FindXcord(current_router);
@@ -1183,18 +1208,38 @@ int id;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
 
-	// demuxret = 0;
-
-	// DOR: 
-	demuxret = hypercube_k(src_router, dest_router);
-	printf("routing to %i from %i using demux %i\n", src_router, dest_router, demuxret);
-	//printf("Routing %d->%d Cur:%d Port:%d\n", *src, *dest, cur, demuxret );
+	printf("\n--- routing packet ---\n");
+	printf("    routing info:\n");
+	printf("    - source router: %i (%i, %i)\n", src_router, src_xoffset, src_yoffset);
+	printf("    - current router: %i (%i, %i)\n", current_router, cur_xoffset, cur_yoffset);
+	printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
+	
+	if (current_router == dest_router){
+		demuxret = RADIX;
+		printf("demuxret = %i\n", demuxret);
+	}
+	else{
+		demuxret = hypercube_k(current_router, dest_router);
+		
+		tempcpu = hypercube_route(current_router, dest_router);
+		tempcpu_x = FindXcord(tempcpu);
+		tempcpu_y = FindYcord(tempcpu);
+		
+		printf("--> routing from %i (%i, %i) to %i (%i, %i) via  demuxret = (%i)\n",
+			current_router, cur_xoffset, cur_yoffset,
+			tempcpu, tempcpu_x, tempcpu_y,
+			demuxret);
+		}
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < K)	// +x, -x, +y, -y
+	if(demuxret < RADIX){
 		hoptype[1]++;
-	else 				// OPORT
+		printf("    routing in network\n");
+	}
+	else{ 				// OPORT
 		hoptype[0]++;
+		printf("    at dest, routing to core!\n");
+	}
 
 	return demuxret;
 }
@@ -1214,8 +1259,6 @@ void UserEventS()
 
 	index = ActivityArgSize(ME);
 	inport = (IPORT*)ActivityGetArg(ME);
-	
-	printf("sending event function: xsrc=%i, ysrc=%i, x_dest=%i, y_dest=%i, pkt=%i\n", xsrc, ysrc, xdest, ydest, pkt);
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
 	switch (EventGetState()) {
@@ -1288,6 +1331,8 @@ void UserEventS()
 							YS__errmsg("Traffic Type Undefined\n");
 							break;
 				}
+				
+				dest = 3;
 
 				seqno = index + MAX_CPU * (NPKTS - npkts);
 				measure[index]->send = measure[index]->send + 1;
@@ -1526,7 +1571,9 @@ char** argv;
 	// Interconnect the routers
 	int core_code[K];  // ex, {1, 0, 0, 1, 0, ..., 0} for i = 9
 	int link_code[K];  // copy for i-th core, to be linked to
-	printf("\nRADIX = %i, K = %i\n", RADIX, K);
+	int link_core, link_core_x, link_core_y, link_i;
+	int core_x, core_y;
+	// printf("\nRADIX = %i, K = %i\n", RADIX, K);
 	for(int core = 0; core < MAX_ROUTERS; core++){
 		// This is a HYPERCUBE Topology, links to complement router in each dimension
 		// Do the connections in dimension k in K and link to conjugate k
@@ -1538,6 +1585,9 @@ char** argv;
 		//	       {1, 0, 0, 0} // x_3 conjugate  (link to core 8)
 		// Do for each switch, mux to buf connections
 		// Directions: k = x_i = {0, 1, ..., K, 0, 0, ..., 0}  (of size K_max)
+		core_x = FindXcord(core);
+		core_y = FindYcord(core);
+		printf("for router %i (%i, %i),\n", core, core_x, core_y);
 		
 		// get core code from mapping (just overwrite core_code)
 		memcpy(core_code, CORE_MAPPING[core], K * sizeof(int));  // copy K ints from i-th row
@@ -1549,16 +1599,20 @@ char** argv;
 		for (int k = 0; k < K; k++){  // loop over dimensionality to link conjugate core codes
 			memcpy(link_code, core_code, K * sizeof(int));  // copy K ints from i-th row
 			link_code[k] = 1 - link_code[k];  // get conjugate of k-th dimension
-			int link_core = read_binary(link_code);
+			link_core = read_binary(link_code);
+			link_core_x = FindXcord(link_core);
+			link_core_y = FindYcord(link_core);
 			
 			// printf("link_core = %i\n", link_core);
-			printf("linking cores (%i) to (%i), [k=%i]\n", core, link_core, k);
+			printf("linking core %i (%i, %i) using link %i\n", 
+				link_core, link_core_x, link_core_y, k);
 			
 			NetworkConnect(switches[core]->output_buffer[k], 
 						   switches[link_core]->input_demux[k], 0, 0);
 			DemuxCreditBuffer(switches[link_core]->input_demux[k], 
 							  switches[core]->output_buffer[k]);
 		}
+		printf("\n");
 		
 		
 		// // +x dimension
@@ -2125,101 +2179,3 @@ int Tornado(int source)
 	return dest;
 }
 
-/***************************** Routing Variations  *****************************/
-/********************************** VALIANT ************************************/
-
-int valiant_route(int source, int dest)
-{
-	int tempcpu;
-
-	do
-	{
-		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
-	}while( tempcpu == source );
-
-	return tempcpu;
-}
-
-/***************************** Routing Variations  *****************************/
-/************************************ ROMM *************************************/
-
-int romm_route(int source, int dest)
-{
-	int tempcpu;
-	int xsrc, ysrc, xdest, ydest, xtemp, ytemp, xlarge, xsmall, ylarge, ysmall;
-	int set = 0;
-
-	xsrc = FindXcord( source );
-	ysrc = FindYcord( source );
-	xdest = FindXcord( dest );
-	ydest = FindYcord( dest );
-
-	do
-	{
-		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
-
-		/*if( tempcpu != source ) {*/
-		xtemp = FindXcord( tempcpu );
-		ytemp = FindYcord( tempcpu );
-
-		if( xsrc >= xdest )
-		{
-			xlarge = xsrc;
-			xsmall = xdest;
-		}
-		else
-		{
-			xlarge = xdest;
-			xsmall = xsrc;
-		}
-
-		if( (xtemp >= xsmall) && (xtemp <= xlarge) )
-		{
-			if( ysrc >= ydest )
-			{
-				ylarge = ysrc;
-				ysmall = ydest;
-			}
-			else
-			{
-				ylarge = ydest;
-				ysmall = ysrc;
-			}
-
-			if( (ytemp >= ysmall) && (ytemp <= ylarge) )
-			{
-				set = 1;
-				break;
-			}
-		}
-		/*tempcpu = source;
-		}*/
-	}while( set == 0 );
-
-	return tempcpu;
-}
-
-
-/***************************** Routing Variations  *****************************/
-/************************************ hypercube ********************************/
-int hypercube_route(int source, int dest){
-	// get code of source and dest
-	int s_code[K];
-	int d_code[K];
-	int temp_code[K];
-	memcpy(s_code, CORE_MAPPING[source], K * sizeof(int));
-	memcpy(d_code, CORE_MAPPING[ dest ], K * sizeof(int));
-	memcpy(temp_code, CORE_MAPPING[source], K * sizeof(int));
-	
-	// route to first non-matching dimension
-	for (int k = 0; k < K; k++){
-		if (s_code[k] != d_code[k]){
-			temp_code[k] = 1 - temp_code[k];  // get conjugate
-			break;  // leave loop now that we've found the next core's code
-		}
-	}
-	
-	// get core corresponding to temp_code (keep legacy naming of the return)
-	int tempcpu = read_binary(temp_code);
-	return tempcpu;
-}
