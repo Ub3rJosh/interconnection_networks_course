@@ -1215,7 +1215,7 @@ int id;
 	printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
 	
 	if (current_router == dest_router){
-		demuxret = RADIX;
+		demuxret = RADIX - 1;
 		printf("demuxret = %i\n", demuxret);
 	}
 	else{
@@ -1232,7 +1232,7 @@ int id;
 		}
 
 	// Keep track of Router and Link utiliztion
-	if(demuxret < RADIX){
+	if(demuxret < RADIX - 1){
 		hoptype[1]++;
 		printf("    routing in network\n");
 	}
@@ -1423,7 +1423,6 @@ void UserEventR()
 	}
 
 	EventReschedSema(OPortSemaphore(outport));
-	printf("PACKET RECIEVED\n");
 
 	return;
 }
@@ -1585,6 +1584,7 @@ char** argv;
 		//	       {1, 0, 0, 0} // x_3 conjugate  (link to core 8)
 		// Do for each switch, mux to buf connections
 		// Directions: k = x_i = {0, 1, ..., K, 0, 0, ..., 0}  (of size K_max)
+		
 		core_x = FindXcord(core);
 		core_y = FindYcord(core);
 		printf("for router %i (%i, %i),\n", core, core_x, core_y);
@@ -1592,10 +1592,7 @@ char** argv;
 		// get core code from mapping (just overwrite core_code)
 		memcpy(core_code, CORE_MAPPING[core], K * sizeof(int));  // copy K ints from i-th row
 		
-		// setup links
-		// printf("\n\ncore = %i\n", core);
-		
-		// link cores based on dimensionality
+		// setup links based on dimensionality
 		for (int k = 0; k < K; k++){  // loop over dimensionality to link conjugate core codes
 			memcpy(link_code, core_code, K * sizeof(int));  // copy K ints from i-th row
 			link_code[k] = 1 - link_code[k];  // get conjugate of k-th dimension
@@ -1603,49 +1600,15 @@ char** argv;
 			link_core_x = FindXcord(link_core);
 			link_core_y = FindYcord(link_core);
 			
-			// printf("link_core = %i\n", link_core);
-			printf("linking core %i (%i, %i) using link %i\n", 
-				link_core, link_core_x, link_core_y, k);
+			// printf("linking core %i (%i, %i) using link %i\n", 
+			// 	link_core, link_core_x, link_core_y, k);
 			
 			NetworkConnect(switches[core]->output_buffer[k], 
 						   switches[link_core]->input_demux[k], 0, 0);
 			DemuxCreditBuffer(switches[link_core]->input_demux[k], 
 							  switches[core]->output_buffer[k]);
 		}
-		printf("\n");
-		
-		
-		// // +x dimension
-		// ax = GetSwitchId(((switches[i]->xcord + 1)%(XNUMPERDIM)), switches[i]->ycord);
-		// NetworkConnect(switches[i]->output_buffer[k], switches[ax]->input_demux[k], 0, 0);
-		// DemuxCreditBuffer(switches[ax]->input_demux[k], switches[i]->output_buffer[k]);
-		// k++;
-
-		// // -x dimension
-		// if( (switches[i]->xcord - 1) < 0 )
-		// 	var = XNUMPERDIM - 1;
-		// else
-		// 	var = switches[i]->xcord - 1;
-		// sx = GetSwitchId(var, switches[i]->ycord);
-		// NetworkConnect(switches[i]->output_buffer[k], switches[sx]->input_demux[k], 0, 0);
-		// DemuxCreditBuffer(switches[sx]->input_demux[k], switches[i]->output_buffer[k]);
-		// k++;
-
-		// // +y dimension
-		// ay = GetSwitchId(switches[i]->xcord, ((switches[i]->ycord + 1)%(YNUMPERDIM)) );
-		// NetworkConnect(switches[i]->output_buffer[k], switches[ay]->input_demux[k], 0, 0);
-		// DemuxCreditBuffer(switches[ay]->input_demux[k], switches[i]->output_buffer[k]);
-		// k++;
-
-		// // -y dimension
-		// if( (switches[i]->ycord - 1) < 0 )
-		// 	var = YNUMPERDIM - 1;
-		// else
-		// 	var = switches[i]->ycord - 1;
-		// sy = GetSwitchId(switches[i]->xcord, var);
-		// NetworkConnect(switches[i]->output_buffer[k], switches[sy]->input_demux[k], 0, 0);
-		// DemuxCreditBuffer(switches[sy]->input_demux[k], switches[i]->output_buffer[k]);
-		// k++;
+		// printf("\n");
 	}
 
 //********************************** Send and Recieve Events **********************************//
