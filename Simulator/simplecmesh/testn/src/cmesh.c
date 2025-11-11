@@ -66,7 +66,6 @@ struct MEASURE {
 measureptr measure[MAX_CPU];
 
 /* Local Variables */
-int router_calls = 0;
 int pktsz = 0;
 int Traffic = 0;
 double bernoulli_rate = 0.0;
@@ -125,11 +124,7 @@ int GetSwitchId(int, int);			/* Get the switch ID from co-ordniates		*/
 int power(int, int);
 
 //************************************ Routing Function *******************************//
-int router(src,dest,id)
-int *src;
-int *dest;
-int id;
-{
+int router(int *src, int *dest, int id){
 	int demuxret, skipcount, k, conc_pair, i;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
@@ -150,18 +145,9 @@ int id;
 	src_yoffset = FindYcord(src_router);
 	
 	demuxret = 0;
-	
-	router_calls++;
-	printf("router() called! (%i)\n", router_calls);
-	printf("source = %i (%i), dest = %i (%i), id=%i\n", 
-		   *src, src_router,
-		   *dest, dest_router,
-		    id);
-	
 			
 	printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
-		   src_router, src_xoffset, src_yoffset, 
-		   // current_router, cur_xoffset, cur_yoffset,
+		   current_router, cur_xoffset, cur_yoffset,
 		   dest_router, dest_xoffset, dest_yoffset);
 	if (*src == *dest){
 		printf("I am at the source! :)");
@@ -169,36 +155,24 @@ int id;
 	}
 	else{
 		// hypercube routing
-		// int tempcpu = route_hypercube(*src, *dest);
-		int tempcpu = route_hypercube(src_router, dest_router);
+		int tempcpu = route_hypercube(current_router, dest_router);
 		int tempcpu_x = FindXcord(tempcpu);
 		int tempcpu_y = FindYcord(tempcpu);
-		printf("hypercube_route(%i, %i) -> %i (%i, %i)\n", 
-			   src_router, dest_router,
-			   tempcpu, tempcpu_x, tempcpu_y);
-		
-		printf("%i (%i, %i) ?= %i (%i, %i)\n", src_router, src_xoffset, src_yoffset, current_router, cur_xoffset, cur_yoffset);
+		printf("hypercube_route(%i, %i) -> %i\n", current_router, dest_router,tempcpu, tempcpu_x, tempcpu_y);
 		
 		// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
 		if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
 			//determine demuxret
-			int row_x = src_xoffset;
-			// printf("row_x = %i\n", row_x);
+			int row_x = cur_xoffset;
 			for (int demux = 0; demux < (RADIX - 1) / 2; demux++){
-				printf("demux = %i, row_x = %i\n", demux, row_x);
-				printf("row_x (%i)  ?=  tempcpu_x (%i)  ->  ", row_x, tempcpu_x);
 				if (row_x == tempcpu_x){
-					printf("yes\n");
 					tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
 					printf("Routing from %i (%i, %i) to %i (%i, %i) (interemediate step!) using demux %i.\n", 
-						   src_router, src_xoffset, src_yoffset,
+						   current_router, cur_xoffset, cur_yoffset,
 						   tempcpu, tempcpu_x, tempcpu_y,
 						   demux);
 					demuxret = demux;
 					break;
-				}
-				else{
-					printf("no\n");
 				}
 				row_x++;
 			}
@@ -206,22 +180,16 @@ int id;
 		// if routing along x, demuxret in [(K - 1) / 2, ..., K]
 		else{  // if the y-coords don't line up then we've only routed in x
 			//determine demuxret
-			int col_y = src_yoffset;
+			int col_y = cur_yoffset;
 			for (int demux = (RADIX - 1) / 2; demux < RADIX; demux++){
-				printf("demux = %i, col_y = %i\n", demux, col_y);
-				printf("col_y (%i)  ?=  tempcpu_y (%i)  ->  ", col_y, tempcpu_y);
 				if (col_y == tempcpu_y){
-					printf("yes\n");
 					tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
 					printf("Routing from %i (%i, %i) to %i (%i, %i) (final step!) using demux %i.\n", 
-						src_router, src_xoffset, src_yoffset,
+						current_router, cur_xoffset, cur_yoffset,
 						tempcpu, tempcpu_x, tempcpu_y,
 						demux);
 					demuxret = demux;
 					break;
-				}
-				else{
-					printf("no\n");
 				}
 				col_y++;
 			}
@@ -258,6 +226,13 @@ void UserEventS()
 
 	index = ActivityArgSize(ME);
 	inport = (IPORT*)ActivityGetArg(ME);
+	
+	// if (index != 0){
+	// 	return;
+	// }
+	// if (count >= 1){
+	// 	return;
+	// }
 	
 	// printf("UserEventS() -> src = (%i, %i), dest = (%i, %i)\n", xsrc, ysrc, xdest, ydest);
 	// printf("UserEventS() -> ");
@@ -334,9 +309,12 @@ void UserEventS()
 							break;
 				}
 				
-				dest = 3;
+				// dest = 3;
 				
 				seqno = index + MAX_CPU * (NPKTS - npkts);
+				if (index == 0){
+					printf("Begin following packet %ld from %d to %d ---\n", seqno, index, dest);
+				}
 				measure[index]->send = measure[index]->send + 1;
 				count++;
 				npkts--;
@@ -417,19 +395,19 @@ void UserEventR()
 			YS__errmsg("Incorrect destination received\n");
 		}
 		
-		printf("PACKET INFO (receive)\n");
-		printf("pktdata->createtime = %i\n", pktdata->createtime);
-		printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
-		printf("pktdata->route      = %i\n", pktdata->route);
-		printf("pktdata->routeA     = %i\n", pktdata->routeA);
-		printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
-		printf("pktdata->switching  = %i\n", pktdata->switching);
-		printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
-		printf("pktdata->lnk        = %i\n", pktdata->lnk);
-		printf("pktdata->seqno      = %i\n", pktdata->seqno);
-		printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
-		printf("----------------------\n");
-		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
+		// printf("PACKET INFO (receive)\n");
+		// printf("pktdata->createtime = %i\n", pktdata->createtime);
+		// printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
+		// printf("pktdata->route      = %i\n", pktdata->route);
+		// printf("pktdata->routeA     = %i\n", pktdata->routeA);
+		// printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
+		// printf("pktdata->switching  = %i\n", pktdata->switching);
+		// printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
+		// printf("pktdata->lnk        = %i\n", pktdata->lnk);
+		// printf("pktdata->seqno      = %i\n", pktdata->seqno);
+		// printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
+		// printf("----------------------\n");
+		// printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 		
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
@@ -454,9 +432,11 @@ void UserEventR()
 			}
 
 			avg_power = pktdata->powers + avg_power;
+			printf("Packet %d received at %d at time %.2f", pktdata->seqno, index, GetSimTime());
 			PacketFree(pkt);
 		}
 		else
+			printf("Packet %d received at %d at time %.2f", pktdata->seqno, index, GetSimTime());
 			PacketFree(pkt);
 	}
 
@@ -623,8 +603,10 @@ char** argv;
 					   link_core, x, core_y, 
 					   link_i);
 				
-				NetworkConnect(switches[core_x]->output_buffer[link_i], switches[x]->input_demux[link_i], 0, 0);
-				DemuxCreditBuffer(switches[x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
+				// NetworkConnect(switches[core_x]->output_buffer[link_i], switches[x]->input_demux[link_i], 0, 0);
+				// DemuxCreditBuffer(switches[x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
+				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
+				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				link_i++;
 			}
 		}
@@ -640,8 +622,10 @@ char** argv;
 					   link_core, core_x, y, 
 					   link_i);
 				
-				NetworkConnect(switches[core_y]->output_buffer[link_i], switches[y]->input_demux[link_i], 0, 0);
-				DemuxCreditBuffer(switches[y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
+				// NetworkConnect(switches[core_y]->output_buffer[link_i], switches[y]->input_demux[link_i], 0, 0);
+				// DemuxCreditBuffer(switches[y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
+				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
+				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				link_i++;
 			}
 		}
