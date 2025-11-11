@@ -48,12 +48,10 @@ int route_hypercube(int source, int dest){
 	// route in x first, then y (DOR)
 	if (source_x != dest_x){
 		tempcpu = GetSwitchId(dest_x, source_y);
-		// printf("route along x\n");
 	}
 	else{
 		// tempcpu = dest;
 		tempcpu = GetSwitchId(dest_x, dest_y);
-		// printf("route along y\n");
 	}
 	return tempcpu;
 }
@@ -146,53 +144,50 @@ int router(int *src, int *dest, int id){
 	src_router = *src/CONC;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
-			
-	// printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
-	// 	   current_router, cur_xoffset, cur_yoffset,
-	// 	   dest_router, dest_xoffset, dest_yoffset);
+	
 	printf("\n--- routing packet ---\n");
 	printf("    routing info:\n");
 	printf("    - source router: %i (%i, %i)\n", src_router, src_xoffset, src_yoffset);
 	printf("    - current router: %i (%i, %i)\n", current_router, cur_xoffset, cur_yoffset);
 	printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
 	
-	
 	if (current_router == dest_router){
+		// printf("    I am at the source! :)\n");
+		// printf("    demuxret = %i\n", demuxret);
+		
 		// demuxret = (RADIX - 1) + (*dest % CONC);
 		demuxret = RADIX - 1;
-		printf("    I am at the source! :)\n");
-		printf("    demuxret = %i\n", demuxret);
 	}
 	else{
 		// hypercube routing
 		int tempcpu = route_hypercube(current_router, dest_router);
 		int tempcpu_x = FindXcord(tempcpu);
 		int tempcpu_y = FindYcord(tempcpu);
-		// printf("hypercube_route(%i, %i) -> %i\n", current_router, dest_router,tempcpu, tempcpu_x, tempcpu_y);
 		
 		// find demuxret
-		// look across x
-		if (cur_xoffset != dest_xoffset){
+		if (cur_xoffset != dest_xoffset){  // look across x
 			demuxret = 0;  // links [0, 1, ..., K] are links across rows
 			for (int x = 0; x < K; x++){
 				if (x == tempcpu_x){
-					demuxret--;
 					printf("    routing along x\n");
+					if (x != 0){
+						demuxret--;
+					}
 					break;
 				}
 				else{
 					demuxret++;
 				}
 			}
-			// demuxret--;  // fix off by one error?
 		}
-		// otherwise, look across y
-		else{
+		else{  // otherwise, look across y
 			demuxret = K - 1;  // links [K, ..., K**2 - 1, K**2] are links across rows
 			for (int y = 0; y < K; y++){
 				if (y == tempcpu_y){
-					// demuxret--;
 					printf("    routing along y\n");
+					if (y != 0){
+						demuxret--;
+					}
 					break;
 				}
 				else{
@@ -209,14 +204,14 @@ int router(int *src, int *dest, int id){
 	// Keep track of Router and Link utilization
 	if(demuxret < (RADIX)){
 		hoptype[1]++;  // network hop increase
-		printf("    Routing in network.\n");
+		// printf("    Routing in network.\n");
 	}
 	else{ 				// OPORT
 		hoptype[0]++;  // output hop increase
-		printf("    At dest, routing to core.\n");
+		// printf("    At dest, routing to core.\n");
 	}
 	
-	printf("    returning demux=%i for id=%i\n", demuxret, id);
+	// printf("    returning demux=%i for id=%i\n", demuxret, id);
 	return demuxret;
 }
 
@@ -235,20 +230,9 @@ void UserEventS()
 
 	index = ActivityArgSize(ME);
 	inport = (IPORT*)ActivityGetArg(ME);
-	
-	// if (index != 0){
-	// 	return;
-	// }
-	// if (count >= 1){
-	// 	return;
-	// }
-	
-	// printf("UserEventS() -> src = (%i, %i), dest = (%i, %i)\n", xsrc, ysrc, xdest, ydest);
-	// printf("UserEventS() -> ");
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
 	int eventgetstate = EventGetState();
-	// printf("EventGetState() = %i\n", eventgetstate);
 	switch (EventGetState()) {
 		
 		case 0: /* To send or not to send */
@@ -317,8 +301,6 @@ void UserEventS()
 							YS__errmsg("Traffic Type Undefined\n");
 							break;
 				}
-				
-				dest = 3;
 				
 				seqno = index + MAX_CPU * (NPKTS - npkts);
 				measure[index]->send = measure[index]->send + 1;
@@ -389,7 +371,7 @@ void UserEventR()
 			printf("----------------------\n");
 			YS__errmsg("Incorrect destination received\n");
 		}
-		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
+		// printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 		
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
@@ -580,11 +562,8 @@ char** argv;
 				link_core = GetSwitchId(x, core_y);  // grab router along row
 				
 				// link
-				// printf("-> linking to row core %i (%i, %i) using link %i\n", 
-				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				
 				link_i++;  // get ready to link next core
 			}
 		}
@@ -595,11 +574,8 @@ char** argv;
 				link_core = GetSwitchId(core_x, y);  // grab router along col
 				
 				// link
-				// printf("-> linking to col core %i (%i, %i) using link %i\n", 
-				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				
 				link_i++;  // get ready to link next core
 			}
 		}
@@ -617,7 +593,6 @@ char** argv;
 			event = NewEvent(namestr, UserEventS, 0);					/* Create sender process 0       */
 			ActivitySetArg(event, switches[i]->iport[j], i * CONC + j);	/* Pass process its id           */
   			ActivitySchedTime(event, 0.0, INDEPENDENT);				/* Schedule process              */
-			// printf("%i, %i\n", i, j);
 		}
 	}
 
@@ -629,7 +604,6 @@ char** argv;
 			event = NewEvent(namestr, UserEventR, 0);					/* Create sender process 0       */
 			ActivitySetArg(event,switches[i]->oport[j], i * CONC + j);	/* Pass process its id           */
   			ActivitySchedTime(event, 0.0, INDEPENDENT);				/* Schedule process              */
-			// printf("%i, %i\n", i, j);
 		}
 	}
 
