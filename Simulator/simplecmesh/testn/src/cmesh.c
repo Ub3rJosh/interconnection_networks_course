@@ -152,27 +152,32 @@ int id;
 	demuxret = 0;
 	
 	router_calls++;
-	printf("\nrouter() called! (%i)\n", router_calls);
+	printf("router() called! (%i)\n", router_calls);
 	printf("source = %i (%i), dest = %i (%i), id=%i\n", 
 		   *src, src_router,
 		   *dest, dest_router,
 		    id);
 	
+			
+	printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
+		   src_router, src_xoffset, src_yoffset, 
+		   // current_router, cur_xoffset, cur_yoffset,
+		   dest_router, dest_xoffset, dest_yoffset);
 	if (*src == *dest){
 		printf("I am at the source! :)");
-		demuxret = 6;
+		demuxret = RADIX - 1;
 	}
 	else{
 		// hypercube routing
-		printf("hypercube_route() called\n");
 		// int tempcpu = route_hypercube(*src, *dest);
 		int tempcpu = route_hypercube(src_router, dest_router);
 		int tempcpu_x = FindXcord(tempcpu);
 		int tempcpu_y = FindYcord(tempcpu);
-		printf("attempting to route from cpu %i (%i, %i) to cpu %i (%i, %i)\n", 
-			// src_router, src_xoffset, src_yoffset, 
-			current_router, cur_xoffset, cur_yoffset,
-			dest_router, tempcpu_x, tempcpu_y);
+		printf("hypercube_route(%i, %i) -> %i (%i, %i)\n", 
+			   src_router, dest_router,
+			   tempcpu, tempcpu_x, tempcpu_y);
+		
+		printf("%i (%i, %i) ?= %i (%i, %i)\n", src_router, src_xoffset, src_yoffset, current_router, cur_xoffset, cur_yoffset);
 		
 		// if routing along x, demuxret in [0, 1, 2, ..., (K - 1) / 2]
 		if (tempcpu_y != dest_yoffset){  // if the y-coords don't line up then we've only routed in x
@@ -181,12 +186,19 @@ int id;
 			// printf("row_x = %i\n", row_x);
 			for (int demux = 0; demux < (RADIX - 1) / 2; demux++){
 				printf("demux = %i, row_x = %i\n", demux, row_x);
-				printf("row_x (%i)  ?=  tempcpu_x (%i)\n", row_x, tempcpu_x);
+				printf("row_x (%i)  ?=  tempcpu_x (%i)  ->  ", row_x, tempcpu_x);
 				if (row_x == tempcpu_x){
+					printf("yes\n");
 					tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
-					printf("Routing from %i to %i (interemediate step!) using demux %i.\n", current_router, tempcpu, demux);
+					printf("Routing from %i (%i, %i) to %i (%i, %i) (interemediate step!) using demux %i.\n", 
+						   src_router, src_xoffset, src_yoffset,
+						   tempcpu, tempcpu_x, tempcpu_y,
+						   demux);
 					demuxret = demux;
 					break;
+				}
+				else{
+					printf("no\n");
 				}
 				row_x++;
 			}
@@ -197,12 +209,19 @@ int id;
 			int col_y = src_yoffset;
 			for (int demux = (RADIX - 1) / 2; demux < RADIX; demux++){
 				printf("demux = %i, col_y = %i\n", demux, col_y);
-				printf("col_y (%i)  ?=  tempcpu_y (%i)\n", col_y, tempcpu_y);
+				printf("col_y (%i)  ?=  tempcpu_y (%i)  ->  ", col_y, tempcpu_y);
 				if (col_y == tempcpu_y){
+					printf("yes\n");
 					tempcpu = GetSwitchId(tempcpu_x, tempcpu_y);
-					printf("Routing from %i to %i (final step!) using demux %i.\n", current_router, tempcpu, demux);
+					printf("Routing from %i (%i, %i) to %i (%i, %i) (final step!) using demux %i.\n", 
+						src_router, src_xoffset, src_yoffset,
+						tempcpu, tempcpu_x, tempcpu_y,
+						demux);
 					demuxret = demux;
 					break;
+				}
+				else{
+					printf("no\n");
 				}
 				col_y++;
 			}
@@ -332,6 +351,18 @@ void UserEventS()
 					pktdata->packetsize = pktsz;
 					pktdata->intercpu = tempcpu;
 					
+					printf("PACKET INFO");
+					printf("pktdata->createtime = %i\n", pktdata->createtime);
+					printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
+					printf("pktdata->route      = %i\n", pktdata->route);
+					printf("pktdata->routeA     = %i\n", pktdata->routeA);
+					printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
+					printf("pktdata->switching  = %i\n", pktdata->switching);
+					printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
+					printf("pktdata->lnk        = %i\n", pktdata->lnk);
+					printf("pktdata->seqno      = %i\n", pktdata->seqno);
+					printf("----------------------\n");
+					
 					// xsrc = FindXcord(pktdata->srccpu);
 					// ysrc = FindYcord(pktdata->srccpu);
 					// xdest = FindXcord(pktdata->destcpu);
@@ -339,7 +370,7 @@ void UserEventS()
 					// printf("SENDING PACKET from src = %i (%i, %i) to  dest = %i (%i, %i)\n", 
 					// 	tempcpu, xsrc, ysrc, 
 					// 	dest, xdest, ydest);
-					printf("PacketSend(pkt=pkt, inport=%i, index=%i, dest=%i, i=%i, pktsz=%i, tempcpu=%i)\n", 
+					printf("\n\nPacketSend(pkt=pkt, inport=%i, index=%i, dest=%i, i=%i, pktsz=%i, tempcpu=%i)\n", 
 						*inport, index, dest, i, pktsz, tempcpu);
 					senddelay = PacketSend(pkt, inport, index, dest, i, pktsz, tempcpu);
 				}
@@ -1093,43 +1124,34 @@ int Tornado(int source)
 	return dest;
 }
 
-/***************************** Routing Variations  *****************************/
-/********************************** VALIANT ************************************/
-
-int valiant_route( int source, int dest )
-{
-	int tempcpu;
-
-	do
-	{
-		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
-	}while( tempcpu == source );
-
-	return tempcpu;
-}
-
+// /***************************** Routing Variations  *****************************/
+// /********************************** VALIANT ************************************/
+// int valiant_route( int source, int dest )
+// {
+// 	int tempcpu;
+// 	do
+// 	{
+// 		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
+// 	}while( tempcpu == source );
+// 	return tempcpu;
+// }
 // /***************************** Routing Variations  *****************************/
 // /************************************ ROMM *************************************/
-
 // int romm_route( int source, int dest )
 // {
 // 	int tempcpu;
 // 	int xsrc, ysrc, xdest, ydest, xtemp, ytemp, xlarge, xsmall, ylarge, ysmall;
 // 	int set = 0;
-
 // 	xsrc = FindXcord( source );
 // 	ysrc = FindYcord( source );
 // 	xdest = FindXcord( dest );
 // 	ydest = FindYcord( dest );
-
 // 	do
 // 	{
 // 		tempcpu = RandUniformInt(0, MAX_CPU - 1 );
-
 // 		/*if( tempcpu != source ) {*/
 // 		xtemp = FindXcord( tempcpu );
 // 		ytemp = FindYcord( tempcpu );
-
 // 		if( xsrc >= xdest )
 // 		{
 // 			xlarge = xsrc;
@@ -1140,7 +1162,6 @@ int valiant_route( int source, int dest )
 // 			xlarge = xdest;
 // 			xsmall = xsrc;
 // 		}
-
 // 		if( (xtemp >= xsmall) && (xtemp <= xlarge) )
 // 		{
 // 			if( ysrc >= ydest )
@@ -1153,7 +1174,6 @@ int valiant_route( int source, int dest )
 // 				ylarge = ydest;
 // 				ysmall = ysrc;
 // 			}
-
 // 			if( (ytemp >= ysmall) && (ytemp <= ylarge) )
 // 			{
 // 				set = 1;
@@ -1163,7 +1183,6 @@ int valiant_route( int source, int dest )
 // 		/*tempcpu = source;
 // 		}*/
 // 	}while( set == 0 );
-
 // 	return tempcpu;
 // }
 
