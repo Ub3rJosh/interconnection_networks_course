@@ -38,19 +38,20 @@ int GetSwitchId(int cordx, int cordy)
 
 /************************************ hypercube routing *************************************/
 int route_hypercube(int source, int dest){
+	int tempcpu;  // keep legacy naming
+	
 	int source_x = FindXcord(source);
 	int source_y = FindYcord(source);
 	int dest_x = FindXcord(dest);
-	// int dest_y = FindYcord(dest);
-	
-	int tempcpu;  // keep legacy naming
+	int dest_y = FindYcord(dest);
 	
 	// route in x first, then y (DOR)
 	if (source_x != dest_x){
 		tempcpu = GetSwitchId(dest_x, source_y);
 	}
 	else{
-		tempcpu = dest;
+		// tempcpu = dest;
+		tempcpu = GetSwitchId(dest_x, dest_y);
 	}
 	return tempcpu;
 }
@@ -132,7 +133,6 @@ int router(int *src, int *dest, int id){
 	int xidentity, diff, pos_skip, neg_skip;
 	
 	current_router = id/((2)*(RADIX));
-	// printf("current_router = %i\n", current_router);
 	cur_xoffset = FindXcord(current_router);
 	cur_yoffset = FindYcord(current_router);
 	
@@ -582,53 +582,46 @@ char** argv;
 	}
 
 	// Interconnect the routers
-	int link_core;
+	int link_core, link_i;
 	int core, core_x, core_y;
-	int temp_x;
-	int link_i;  // for counting which link to do
-	
 	// link across row (for KxK 2D mesh core layout)
+	printf("-> %i <-\n", (RADIX - 1) / 2);
 	for (int core = 0; core < MAX_CPU; core++){
-		link_i = 0;
 		core_x = FindXcord(core);
 		core_y = FindYcord(core);
+		printf("for router %i, (%i, %i):\n", core, core_x, core_y);
 		
-		// row
+		link_i = 0;
+		// link rows
 		for (int x = 0; x < K; x++){
 			if (x != core_x){
-				link_core = core_y * K + x;
+				link_core = GetSwitchId(x, core_y);  // grab router along row
 				
-				printf("row: linking core %i (%i, %i) to core %i (%i, %i) via buffer/demux %i\n", 
-					   core, core_x, core_y, 
-					   link_core, x, core_y, 
-					   link_i);
-				
-				// NetworkConnect(switches[core_x]->output_buffer[link_i], switches[x]->input_demux[link_i], 0, 0);
-				// DemuxCreditBuffer(switches[x]->input_demux[link_i], switches[core_x]->output_buffer[link_i]);
+				// link
+				printf("-> linking to row core %i (%i, %i) using link %i\n", 
+					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				link_i++;
+				
+				link_i++;  // get ready to link next core
 			}
 		}
 		
-		// column
+		// link columns
 		for (int y = 0; y < K; y++){
 			if (y != core_y){
-				link_core = y * K + core_x;
-
+				link_core = GetSwitchId(core_x, y);  // grab router along col
 				
-				printf("col: linking core %i (%i, %i) to core %i (%i, %i) via buffer/demux %i\n", 
-					   core, core_x, core_y, 
-					   link_core, core_x, y, 
-					   link_i);
-				
-				// NetworkConnect(switches[core_y]->output_buffer[link_i], switches[y]->input_demux[link_i], 0, 0);
-				// DemuxCreditBuffer(switches[y]->input_demux[link_i], switches[core_y]->output_buffer[link_i]);
+				// link
+				printf("-> linking to col core %i (%i, %i) using link %i\n", 
+					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				link_i++;
+				
+				link_i++;  // get ready to link next core
 			}
 		}
+		
 		printf("\n");
 	}
 	printf("Routers linked.\n\n");
