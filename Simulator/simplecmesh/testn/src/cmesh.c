@@ -351,7 +351,7 @@ void UserEventS()
 					pktdata->packetsize = pktsz;
 					pktdata->intercpu = tempcpu;
 					
-					printf("PACKET INFO");
+					printf("PACKET INFO (send)\n");
 					printf("pktdata->createtime = %i\n", pktdata->createtime);
 					printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
 					printf("pktdata->route      = %i\n", pktdata->route);
@@ -361,6 +361,7 @@ void UserEventS()
 					printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
 					printf("pktdata->lnk        = %i\n", pktdata->lnk);
 					printf("pktdata->seqno      = %i\n", pktdata->seqno);
+					printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
 					printf("----------------------\n");
 					
 					// xsrc = FindXcord(pktdata->srccpu);
@@ -416,6 +417,18 @@ void UserEventR()
 			YS__errmsg("Incorrect destination received\n");
 		}
 		
+		printf("PACKET INFO (receive)\n");
+		printf("pktdata->createtime = %i\n", pktdata->createtime);
+		printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
+		printf("pktdata->route      = %i\n", pktdata->route);
+		printf("pktdata->routeA     = %i\n", pktdata->routeA);
+		printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
+		printf("pktdata->switching  = %i\n", pktdata->switching);
+		printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
+		printf("pktdata->lnk        = %i\n", pktdata->lnk);
+		printf("pktdata->seqno      = %i\n", pktdata->seqno);
+		printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
+		printf("----------------------\n");
 		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 		
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
