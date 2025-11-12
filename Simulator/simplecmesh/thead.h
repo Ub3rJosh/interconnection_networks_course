@@ -8,9 +8,9 @@
 #define BPORTPKTS				1
 
 #define CONC					(1)
-#define YNUMPERDIM				(4)
-#define XNUMPERDIM				(4)
-#define K						(4)  // bits in router code (K ** 2  =  XNUMPERDIM + YNUMPERDIM)
+#define YNUMPERDIM				(32)
+#define XNUMPERDIM				(32)
+#define K						(10)  // bits in router code (K ** 2  =  XNUMPERDIM + YNUMPERDIM)
 #define MAX_ROUTERS				(XNUMPERDIM*YNUMPERDIM)
 #define MAX_CPU					(MAX_ROUTERS * CONC)
 #define RADIX					(2 * (XNUMPERDIM - 1) + CONC)

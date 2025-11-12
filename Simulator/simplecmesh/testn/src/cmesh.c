@@ -574,13 +574,14 @@ char** argv;
 					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				// NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				// DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
-				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
+				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[core_x], 0, 0);
+				DemuxCreditBuffer(switches[link_core]->input_demux[core_x], switches[core]->output_buffer[link_i]);
 				link_i++;  // get ready to link next core
 			}
 		}
 		
 		// link columns
+		int temp_fix = XNUMPERDIM - 1;
 		for (int y = 0; y < YNUMPERDIM; y++){
 			if (y != core_y){
 				link_core = GetSwitchId(core_x, y);  // grab router along col
@@ -588,8 +589,10 @@ char** argv;
 				// link
 				printf("-> linking to col core %i (%i, %i) using link %i\n", 
 					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
-				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
-				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
+				// NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
+				// DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
+				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[core_y + temp_fix], 0, 0);
+				DemuxCreditBuffer(switches[link_core]->input_demux[core_y + temp_fix], switches[core]->output_buffer[link_i]);
 				link_i++;  // get ready to link next core
 			}
 		}
