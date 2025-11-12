@@ -1330,8 +1330,6 @@ void UserEventS()
 							YS__errmsg("Traffic Type Undefined\n");
 							break;
 				}
-				
-				dest = 3;
 
 				seqno = index + MAX_CPU * (NPKTS - npkts);
 				measure[index]->send = measure[index]->send + 1;

@@ -1,27 +1,27 @@
 ****************** Start *************************
-Max CPUs = 1024
-Radix = 11
+Max CPUs = 16
+Radix = 5
 CONC = 1
 
 Traffic = 4
 Packet Size = 4
 Network Load = 1
 Cycles to be simulated = 10000
-End Simulation 73102
+End Simulation 10175
 
-Sent Packets 16291
-Received Packets 16291
+Sent Packets 10080
+Received Packets 10080
 
-Achieved Throughput 0.00636367
-Average Latency 34233.4
+Achieved Throughput 0.252
+Average Latency 3879.84
 
-Router Traversals: 95210
-Average Router Traversals: 5.84433
+Router Traversals: 50400
+Average Router Traversals: 5
 
-Link Traversals: 78919
-Average Network Hops: 4.84433
+Link Traversals: 40320
+Average Network Hops: 4
 
-OPORT link: 16291
+OPORT link: 10080
 
-Program took: 0.204101 seconds
+Program took: 0.078454 seconds
 ******************** End *************************

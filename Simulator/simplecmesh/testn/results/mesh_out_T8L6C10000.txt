@@ -7,21 +7,21 @@ Traffic = 8
 Packet Size = 4
 Network Load = 0.6
 Cycles to be simulated = 10000
-End Simulation 74410
+End Simulation 10199
 
-Sent Packets 16293
-Received Packets 16293
+Sent Packets 644920
+Received Packets 644920
 
-Achieved Throughput 0.00636445
-Average Latency 34509.6
+Achieved Throughput 0.251922
+Average Latency 3018.64
 
-Router Traversals: 95401
-Average Router Traversals: 5.85534
+Router Traversals: 2458756
+Average Router Traversals: 3.8125
 
-Link Traversals: 79108
-Average Network Hops: 4.85534
+Link Traversals: 1813836
+Average Network Hops: 2.8125
 
-OPORT link: 16293
+OPORT link: 644920
 
-Program took: 0.209978 seconds
+Program took: 4.55526 seconds
 ******************** End *************************
