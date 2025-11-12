@@ -1189,7 +1189,6 @@ int *src;
 int *dest;
 int id;
 {
-	// printf("running ->  router(source = %i, dest = %i, id=%i)\n", src, dest, id);
 	int demuxret;
 	int current_router, cur_xoffset, cur_yoffset;
 	int dest_router, dest_xoffset, dest_yoffset;
@@ -1208,15 +1207,15 @@ int id;
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
 
-	printf("\n--- routing packet ---\n");
-	printf("    routing info:\n");
-	printf("    - source router: %i (%i, %i)\n", src_router, src_xoffset, src_yoffset);
-	printf("    - current router: %i (%i, %i)\n", current_router, cur_xoffset, cur_yoffset);
-	printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
+	// printf("\n--- routing packet ---\n");
+	// printf("    routing info:\n");
+	// printf("    - source router: %i (%i, %i)\n", src_router, src_xoffset, src_yoffset);
+	// printf("    - current router: %i (%i, %i)\n", current_router, cur_xoffset, cur_yoffset);
+	// printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
 	
 	if (current_router == dest_router){
 		demuxret = RADIX - 1;
-		printf("demuxret = %i\n", demuxret);
+		// printf("demuxret = %i\n", demuxret);
 	}
 	else{
 		demuxret = hypercube_k(current_router, dest_router);
@@ -1225,20 +1224,20 @@ int id;
 		tempcpu_x = FindXcord(tempcpu);
 		tempcpu_y = FindYcord(tempcpu);
 		
-		printf("--> routing from %i (%i, %i) to %i (%i, %i) via  demuxret = (%i)\n",
-			current_router, cur_xoffset, cur_yoffset,
-			tempcpu, tempcpu_x, tempcpu_y,
-			demuxret);
+		// printf("--> routing from %i (%i, %i) to %i (%i, %i) via  demuxret = (%i)\n",
+		// 	current_router, cur_xoffset, cur_yoffset,
+		// 	tempcpu, tempcpu_x, tempcpu_y,
+		// 	demuxret);
 		}
 
 	// Keep track of Router and Link utiliztion
 	if(demuxret < RADIX - 1){
 		hoptype[1]++;
-		printf("    routing in network\n");
+		// printf("    routing in network\n");
 	}
 	else{ 				// OPORT
 		hoptype[0]++;
-		printf("    at dest, routing to core!\n");
+		// printf("    at dest, routing to core!\n");
 	}
 
 	return demuxret;
@@ -1587,7 +1586,7 @@ char** argv;
 		
 		core_x = FindXcord(core);
 		core_y = FindYcord(core);
-		printf("for router %i (%i, %i),\n", core, core_x, core_y);
+		// printf("for router %i (%i, %i),\n", core, core_x, core_y);
 		
 		// get core code from mapping (just overwrite core_code)
 		memcpy(core_code, CORE_MAPPING[core], K * sizeof(int));  // copy K ints from i-th row

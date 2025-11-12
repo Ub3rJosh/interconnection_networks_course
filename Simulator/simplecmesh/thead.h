@@ -9,12 +9,12 @@
 
 #define CONC					(1)  // is this the bristling factor?
 
-#define XNUMPERDIM				(4)
-#define YNUMPERDIM				(4)
+#define XNUMPERDIM				(32)
+#define YNUMPERDIM				(32)
 
 // include k dimensions where N = pow(2, k) = XNUMPERDIM * YNUMPERDIM
 #define K_max					(10)
-#define K						(4)  // (where k <= K_max) the dimensionality of the hypercube
+#define K						(10)  // (where k <= K_max) the dimensionality of the hypercube
 #define X0_NUMPERDIM			(2)
 #define X1_NUMPERDIM			(2)
 #define X2_NUMPERDIM			(2)
@@ -27,6 +27,7 @@
 #define X9_NUMPERDIM			(2)
 
 #define MAX_ROUTERS				(XNUMPERDIM * YNUMPERDIM)
+// #define MAX_ROUTERS				(K * K)
 #define MAX_CPU					(MAX_ROUTERS*CONC)
 #define MAX_POSSIBLE_CPUS		(1024)
 // #define RADIX					(4+CONC)
