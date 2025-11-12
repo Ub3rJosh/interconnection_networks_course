@@ -1126,6 +1126,7 @@ struct MEASURE {
 measureptr measure[MAX_CPU];
 
 /* Local Variables */
+int total_routes = 0;
 int pktsz = 0;
 int Traffic = 0;
 double bernoulli_rate = 0.0;
@@ -1212,6 +1213,12 @@ int id;
 	// printf("    - source router: %i (%i, %i)\n", src_router, src_xoffset, src_yoffset);
 	// printf("    - current router: %i (%i, %i)\n", current_router, cur_xoffset, cur_yoffset);
 	// printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
+	total_routes++;
+	printf("(%i) routing from %i (%i, %i) -> %i (%i, %i) -> %i (%i, %i)\n",
+		   total_routes,
+		   src_router, src_xoffset, src_yoffset, 
+		   current_router, cur_xoffset, cur_yoffset, 
+		   dest_router, dest_xoffset, dest_yoffset);
 	
 	if (current_router == dest_router){
 		demuxret = RADIX - 1;

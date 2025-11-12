@@ -9,12 +9,12 @@
 
 #define CONC					(1)  // is this the bristling factor?
 
-#define XNUMPERDIM				(32)
-#define YNUMPERDIM				(32)
+#define XNUMPERDIM				(4)
+#define YNUMPERDIM				(4)
 
 // include k dimensions where N = pow(2, k) = XNUMPERDIM * YNUMPERDIM
 #define K_max					(10)
-#define K						(10)  // (where k <= K_max) the dimensionality of the hypercube
+#define K						(4)  // (where k <= K_max) the dimensionality of the hypercube
 #define X0_NUMPERDIM			(2)
 #define X1_NUMPERDIM			(2)
 #define X2_NUMPERDIM			(2)
