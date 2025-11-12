@@ -5,23 +5,23 @@ CONC = 1
 
 Traffic = 0
 Packet Size = 4
-Network Load = 0.15
+Network Load = 0.1
 Cycles to be simulated = 10000
-End Simulation 10129
+End Simulation 11040
 
-Sent Packets 5952
-Received Packets 5952
+Sent Packets 2438
+Received Packets 2438
 
-Achieved Throughput 0.1488
-Average Latency 91.0168
+Achieved Throughput 0.06095
+Average Latency 2010.81
 
-Router Traversals: 21751
-Average Router Traversals: 3.6544
+Router Traversals: 7591
+Average Router Traversals: 3.11362
 
-Link Traversals: 15799
-Average Network Hops: 2.6544
+Link Traversals: 5153
+Average Network Hops: 2.11362
 
-OPORT link: 5952
+OPORT link: 2438
 
-Program took: 0.154136 seconds
+Program took: 0.134112 seconds
 ******************** End *************************
