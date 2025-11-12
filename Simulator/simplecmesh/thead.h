@@ -32,7 +32,7 @@
 #define MAX_POSSIBLE_CPUS		(1024)
 // #define RADIX					(4+CONC)
 #define RADIX					(K + CONC)
-#define DIMENSION1				(32)			//power of 2 required to reach max_nodes 
+// #define DIMENSION1				(8)			//power of 2 required to reach max_nodes 
 
 /************************************************************************************/
 /******************************* CONSTANTS USED *************************************/

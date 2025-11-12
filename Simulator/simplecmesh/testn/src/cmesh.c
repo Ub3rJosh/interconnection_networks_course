@@ -1974,10 +1974,10 @@ int power(int base, int n) // base^n
 int BitReversal(int source)
 {
 	int dest, src, i, sbit;
-	int bin_dest[DIMENSION1];
+	int bin_dest[K];
 
 	src = source;
-	for( i = DIMENSION1-1; i >= 0; i-- )
+	for( i = K-1; i >= 0; i-- )
 	{
 		sbit = src%2;
 		bin_dest[i] = sbit;
@@ -1985,7 +1985,7 @@ int BitReversal(int source)
 	}
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -1997,10 +1997,10 @@ int BitReversal(int source)
 int Butterfly(int source)
 {
 	int dest, src, i, sbit, temp;
-	int bin_dest[DIMENSION1];
+	int bin_dest[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_dest[i] = sbit;
@@ -2008,11 +2008,11 @@ int Butterfly(int source)
 	}
 
 	temp = bin_dest[0];
-	bin_dest[0] = bin_dest[DIMENSION1-1];
-	bin_dest[DIMENSION1-1] = temp;
+	bin_dest[0] = bin_dest[K-1];
+	bin_dest[K-1] = temp;
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -2024,19 +2024,21 @@ int Butterfly(int source)
 int Complement(int source)
 {
 	int dest, src, i, sbit;
-	int bin_dest[DIMENSION1];
+	int bin_dest[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_dest[i] = ( (sbit == 0) ? 1 : 0 );
+		// bin_dest[i] = 1 - sbit;
 		src = src/2;
 	}
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
+	// printf("%i complement = %i\n", source, dest);
 
 	return dest;
 }
@@ -2047,31 +2049,31 @@ int Complement(int source)
 int MatrixTranspose(int source)
 {
 	int dest, src, i,j, sbit;
-	int bin_src[DIMENSION1], bin_dest[DIMENSION1];
+	int bin_src[K], bin_dest[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_src[i] = sbit;
 		src = src/2;
 	}
 
-	j = DIMENSION1 - 1;
-	for( i = (DIMENSION1/2)-1; i >= 0; i-- )
+	j = K - 1;
+	for( i = (K/2)-1; i >= 0; i-- )
 	{
 		bin_dest[j] = bin_src[i];
 		j--;
 	}
 
-	for( i = DIMENSION1 - 1; i >= DIMENSION1/2; i-- )
+	for( i = K - 1; i >= K/2; i-- )
 	{
 		bin_dest[j] = bin_src[i];
 		j--;
 	}
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -2083,10 +2085,10 @@ int MatrixTranspose(int source)
 int PerfectShuffle(int source)
 {
 	int dest1, dest, src, i, sbit, j;
-	int bin_dest[DIMENSION1], bin_src[DIMENSION1];
+	int bin_dest[K], bin_src[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_src[i] = sbit;
@@ -2094,15 +2096,15 @@ int PerfectShuffle(int source)
 	}
 
 	j = 1;
-	for( i = 0; i < DIMENSION1 - 1; i++ )
+	for( i = 0; i < K - 1; i++ )
 	{
 		bin_dest[j] = bin_src[i];
 		j++;
 	}
-	bin_dest[0] = bin_src[DIMENSION1-1];
+	bin_dest[0] = bin_src[K-1];
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
