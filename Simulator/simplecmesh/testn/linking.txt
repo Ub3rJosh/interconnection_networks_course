@@ -1,0 +1,1023 @@
+for router 0, (0, 0):
+-> linking to row core 1 (1, 0) using link 0
+-> linking to row core 2 (2, 0) using link 1
+-> linking to row core 3 (3, 0) using link 2
+-> linking to row core 4 (4, 0) using link 3
+-> linking to row core 5 (5, 0) using link 4
+-> linking to row core 6 (6, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 8 (0, 1) using link 7
+-> linking to col core 16 (0, 2) using link 8
+-> linking to col core 24 (0, 3) using link 9
+-> linking to col core 32 (0, 4) using link 10
+-> linking to col core 40 (0, 5) using link 11
+-> linking to col core 48 (0, 6) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 1, (1, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 2 (2, 0) using link 1
+-> linking to row core 3 (3, 0) using link 2
+-> linking to row core 4 (4, 0) using link 3
+-> linking to row core 5 (5, 0) using link 4
+-> linking to row core 6 (6, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 9 (1, 1) using link 7
+-> linking to col core 17 (1, 2) using link 8
+-> linking to col core 25 (1, 3) using link 9
+-> linking to col core 33 (1, 4) using link 10
+-> linking to col core 41 (1, 5) using link 11
+-> linking to col core 49 (1, 6) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 2, (2, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 1 (1, 0) using link 1
+-> linking to row core 3 (3, 0) using link 2
+-> linking to row core 4 (4, 0) using link 3
+-> linking to row core 5 (5, 0) using link 4
+-> linking to row core 6 (6, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 10 (2, 1) using link 7
+-> linking to col core 18 (2, 2) using link 8
+-> linking to col core 26 (2, 3) using link 9
+-> linking to col core 34 (2, 4) using link 10
+-> linking to col core 42 (2, 5) using link 11
+-> linking to col core 50 (2, 6) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 3, (3, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 1 (1, 0) using link 1
+-> linking to row core 2 (2, 0) using link 2
+-> linking to row core 4 (4, 0) using link 3
+-> linking to row core 5 (5, 0) using link 4
+-> linking to row core 6 (6, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 11 (3, 1) using link 7
+-> linking to col core 19 (3, 2) using link 8
+-> linking to col core 27 (3, 3) using link 9
+-> linking to col core 35 (3, 4) using link 10
+-> linking to col core 43 (3, 5) using link 11
+-> linking to col core 51 (3, 6) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 4, (4, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 1 (1, 0) using link 1
+-> linking to row core 2 (2, 0) using link 2
+-> linking to row core 3 (3, 0) using link 3
+-> linking to row core 5 (5, 0) using link 4
+-> linking to row core 6 (6, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 12 (4, 1) using link 7
+-> linking to col core 20 (4, 2) using link 8
+-> linking to col core 28 (4, 3) using link 9
+-> linking to col core 36 (4, 4) using link 10
+-> linking to col core 44 (4, 5) using link 11
+-> linking to col core 52 (4, 6) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 5, (5, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 1 (1, 0) using link 1
+-> linking to row core 2 (2, 0) using link 2
+-> linking to row core 3 (3, 0) using link 3
+-> linking to row core 4 (4, 0) using link 4
+-> linking to row core 6 (6, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 13 (5, 1) using link 7
+-> linking to col core 21 (5, 2) using link 8
+-> linking to col core 29 (5, 3) using link 9
+-> linking to col core 37 (5, 4) using link 10
+-> linking to col core 45 (5, 5) using link 11
+-> linking to col core 53 (5, 6) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 6, (6, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 1 (1, 0) using link 1
+-> linking to row core 2 (2, 0) using link 2
+-> linking to row core 3 (3, 0) using link 3
+-> linking to row core 4 (4, 0) using link 4
+-> linking to row core 5 (5, 0) using link 5
+-> linking to row core 7 (7, 0) using link 6
+-> linking to col core 14 (6, 1) using link 7
+-> linking to col core 22 (6, 2) using link 8
+-> linking to col core 30 (6, 3) using link 9
+-> linking to col core 38 (6, 4) using link 10
+-> linking to col core 46 (6, 5) using link 11
+-> linking to col core 54 (6, 6) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 7, (7, 0):
+-> linking to row core 0 (0, 0) using link 0
+-> linking to row core 1 (1, 0) using link 1
+-> linking to row core 2 (2, 0) using link 2
+-> linking to row core 3 (3, 0) using link 3
+-> linking to row core 4 (4, 0) using link 4
+-> linking to row core 5 (5, 0) using link 5
+-> linking to row core 6 (6, 0) using link 6
+-> linking to col core 15 (7, 1) using link 7
+-> linking to col core 23 (7, 2) using link 8
+-> linking to col core 31 (7, 3) using link 9
+-> linking to col core 39 (7, 4) using link 10
+-> linking to col core 47 (7, 5) using link 11
+-> linking to col core 55 (7, 6) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 8, (0, 1):
+-> linking to row core 9 (1, 1) using link 0
+-> linking to row core 10 (2, 1) using link 1
+-> linking to row core 11 (3, 1) using link 2
+-> linking to row core 12 (4, 1) using link 3
+-> linking to row core 13 (5, 1) using link 4
+-> linking to row core 14 (6, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 16 (0, 2) using link 8
+-> linking to col core 24 (0, 3) using link 9
+-> linking to col core 32 (0, 4) using link 10
+-> linking to col core 40 (0, 5) using link 11
+-> linking to col core 48 (0, 6) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 9, (1, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 10 (2, 1) using link 1
+-> linking to row core 11 (3, 1) using link 2
+-> linking to row core 12 (4, 1) using link 3
+-> linking to row core 13 (5, 1) using link 4
+-> linking to row core 14 (6, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 17 (1, 2) using link 8
+-> linking to col core 25 (1, 3) using link 9
+-> linking to col core 33 (1, 4) using link 10
+-> linking to col core 41 (1, 5) using link 11
+-> linking to col core 49 (1, 6) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 10, (2, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 9 (1, 1) using link 1
+-> linking to row core 11 (3, 1) using link 2
+-> linking to row core 12 (4, 1) using link 3
+-> linking to row core 13 (5, 1) using link 4
+-> linking to row core 14 (6, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 18 (2, 2) using link 8
+-> linking to col core 26 (2, 3) using link 9
+-> linking to col core 34 (2, 4) using link 10
+-> linking to col core 42 (2, 5) using link 11
+-> linking to col core 50 (2, 6) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 11, (3, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 9 (1, 1) using link 1
+-> linking to row core 10 (2, 1) using link 2
+-> linking to row core 12 (4, 1) using link 3
+-> linking to row core 13 (5, 1) using link 4
+-> linking to row core 14 (6, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 19 (3, 2) using link 8
+-> linking to col core 27 (3, 3) using link 9
+-> linking to col core 35 (3, 4) using link 10
+-> linking to col core 43 (3, 5) using link 11
+-> linking to col core 51 (3, 6) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 12, (4, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 9 (1, 1) using link 1
+-> linking to row core 10 (2, 1) using link 2
+-> linking to row core 11 (3, 1) using link 3
+-> linking to row core 13 (5, 1) using link 4
+-> linking to row core 14 (6, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 20 (4, 2) using link 8
+-> linking to col core 28 (4, 3) using link 9
+-> linking to col core 36 (4, 4) using link 10
+-> linking to col core 44 (4, 5) using link 11
+-> linking to col core 52 (4, 6) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 13, (5, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 9 (1, 1) using link 1
+-> linking to row core 10 (2, 1) using link 2
+-> linking to row core 11 (3, 1) using link 3
+-> linking to row core 12 (4, 1) using link 4
+-> linking to row core 14 (6, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 21 (5, 2) using link 8
+-> linking to col core 29 (5, 3) using link 9
+-> linking to col core 37 (5, 4) using link 10
+-> linking to col core 45 (5, 5) using link 11
+-> linking to col core 53 (5, 6) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 14, (6, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 9 (1, 1) using link 1
+-> linking to row core 10 (2, 1) using link 2
+-> linking to row core 11 (3, 1) using link 3
+-> linking to row core 12 (4, 1) using link 4
+-> linking to row core 13 (5, 1) using link 5
+-> linking to row core 15 (7, 1) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 22 (6, 2) using link 8
+-> linking to col core 30 (6, 3) using link 9
+-> linking to col core 38 (6, 4) using link 10
+-> linking to col core 46 (6, 5) using link 11
+-> linking to col core 54 (6, 6) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 15, (7, 1):
+-> linking to row core 8 (0, 1) using link 0
+-> linking to row core 9 (1, 1) using link 1
+-> linking to row core 10 (2, 1) using link 2
+-> linking to row core 11 (3, 1) using link 3
+-> linking to row core 12 (4, 1) using link 4
+-> linking to row core 13 (5, 1) using link 5
+-> linking to row core 14 (6, 1) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 23 (7, 2) using link 8
+-> linking to col core 31 (7, 3) using link 9
+-> linking to col core 39 (7, 4) using link 10
+-> linking to col core 47 (7, 5) using link 11
+-> linking to col core 55 (7, 6) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 16, (0, 2):
+-> linking to row core 17 (1, 2) using link 0
+-> linking to row core 18 (2, 2) using link 1
+-> linking to row core 19 (3, 2) using link 2
+-> linking to row core 20 (4, 2) using link 3
+-> linking to row core 21 (5, 2) using link 4
+-> linking to row core 22 (6, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 8 (0, 1) using link 8
+-> linking to col core 24 (0, 3) using link 9
+-> linking to col core 32 (0, 4) using link 10
+-> linking to col core 40 (0, 5) using link 11
+-> linking to col core 48 (0, 6) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 17, (1, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 18 (2, 2) using link 1
+-> linking to row core 19 (3, 2) using link 2
+-> linking to row core 20 (4, 2) using link 3
+-> linking to row core 21 (5, 2) using link 4
+-> linking to row core 22 (6, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 9 (1, 1) using link 8
+-> linking to col core 25 (1, 3) using link 9
+-> linking to col core 33 (1, 4) using link 10
+-> linking to col core 41 (1, 5) using link 11
+-> linking to col core 49 (1, 6) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 18, (2, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 17 (1, 2) using link 1
+-> linking to row core 19 (3, 2) using link 2
+-> linking to row core 20 (4, 2) using link 3
+-> linking to row core 21 (5, 2) using link 4
+-> linking to row core 22 (6, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 10 (2, 1) using link 8
+-> linking to col core 26 (2, 3) using link 9
+-> linking to col core 34 (2, 4) using link 10
+-> linking to col core 42 (2, 5) using link 11
+-> linking to col core 50 (2, 6) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 19, (3, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 17 (1, 2) using link 1
+-> linking to row core 18 (2, 2) using link 2
+-> linking to row core 20 (4, 2) using link 3
+-> linking to row core 21 (5, 2) using link 4
+-> linking to row core 22 (6, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 11 (3, 1) using link 8
+-> linking to col core 27 (3, 3) using link 9
+-> linking to col core 35 (3, 4) using link 10
+-> linking to col core 43 (3, 5) using link 11
+-> linking to col core 51 (3, 6) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 20, (4, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 17 (1, 2) using link 1
+-> linking to row core 18 (2, 2) using link 2
+-> linking to row core 19 (3, 2) using link 3
+-> linking to row core 21 (5, 2) using link 4
+-> linking to row core 22 (6, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 12 (4, 1) using link 8
+-> linking to col core 28 (4, 3) using link 9
+-> linking to col core 36 (4, 4) using link 10
+-> linking to col core 44 (4, 5) using link 11
+-> linking to col core 52 (4, 6) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 21, (5, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 17 (1, 2) using link 1
+-> linking to row core 18 (2, 2) using link 2
+-> linking to row core 19 (3, 2) using link 3
+-> linking to row core 20 (4, 2) using link 4
+-> linking to row core 22 (6, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 13 (5, 1) using link 8
+-> linking to col core 29 (5, 3) using link 9
+-> linking to col core 37 (5, 4) using link 10
+-> linking to col core 45 (5, 5) using link 11
+-> linking to col core 53 (5, 6) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 22, (6, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 17 (1, 2) using link 1
+-> linking to row core 18 (2, 2) using link 2
+-> linking to row core 19 (3, 2) using link 3
+-> linking to row core 20 (4, 2) using link 4
+-> linking to row core 21 (5, 2) using link 5
+-> linking to row core 23 (7, 2) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 14 (6, 1) using link 8
+-> linking to col core 30 (6, 3) using link 9
+-> linking to col core 38 (6, 4) using link 10
+-> linking to col core 46 (6, 5) using link 11
+-> linking to col core 54 (6, 6) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 23, (7, 2):
+-> linking to row core 16 (0, 2) using link 0
+-> linking to row core 17 (1, 2) using link 1
+-> linking to row core 18 (2, 2) using link 2
+-> linking to row core 19 (3, 2) using link 3
+-> linking to row core 20 (4, 2) using link 4
+-> linking to row core 21 (5, 2) using link 5
+-> linking to row core 22 (6, 2) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 15 (7, 1) using link 8
+-> linking to col core 31 (7, 3) using link 9
+-> linking to col core 39 (7, 4) using link 10
+-> linking to col core 47 (7, 5) using link 11
+-> linking to col core 55 (7, 6) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 24, (0, 3):
+-> linking to row core 25 (1, 3) using link 0
+-> linking to row core 26 (2, 3) using link 1
+-> linking to row core 27 (3, 3) using link 2
+-> linking to row core 28 (4, 3) using link 3
+-> linking to row core 29 (5, 3) using link 4
+-> linking to row core 30 (6, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 8 (0, 1) using link 8
+-> linking to col core 16 (0, 2) using link 9
+-> linking to col core 32 (0, 4) using link 10
+-> linking to col core 40 (0, 5) using link 11
+-> linking to col core 48 (0, 6) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 25, (1, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 26 (2, 3) using link 1
+-> linking to row core 27 (3, 3) using link 2
+-> linking to row core 28 (4, 3) using link 3
+-> linking to row core 29 (5, 3) using link 4
+-> linking to row core 30 (6, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 9 (1, 1) using link 8
+-> linking to col core 17 (1, 2) using link 9
+-> linking to col core 33 (1, 4) using link 10
+-> linking to col core 41 (1, 5) using link 11
+-> linking to col core 49 (1, 6) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 26, (2, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 25 (1, 3) using link 1
+-> linking to row core 27 (3, 3) using link 2
+-> linking to row core 28 (4, 3) using link 3
+-> linking to row core 29 (5, 3) using link 4
+-> linking to row core 30 (6, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 10 (2, 1) using link 8
+-> linking to col core 18 (2, 2) using link 9
+-> linking to col core 34 (2, 4) using link 10
+-> linking to col core 42 (2, 5) using link 11
+-> linking to col core 50 (2, 6) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 27, (3, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 25 (1, 3) using link 1
+-> linking to row core 26 (2, 3) using link 2
+-> linking to row core 28 (4, 3) using link 3
+-> linking to row core 29 (5, 3) using link 4
+-> linking to row core 30 (6, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 11 (3, 1) using link 8
+-> linking to col core 19 (3, 2) using link 9
+-> linking to col core 35 (3, 4) using link 10
+-> linking to col core 43 (3, 5) using link 11
+-> linking to col core 51 (3, 6) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 28, (4, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 25 (1, 3) using link 1
+-> linking to row core 26 (2, 3) using link 2
+-> linking to row core 27 (3, 3) using link 3
+-> linking to row core 29 (5, 3) using link 4
+-> linking to row core 30 (6, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 12 (4, 1) using link 8
+-> linking to col core 20 (4, 2) using link 9
+-> linking to col core 36 (4, 4) using link 10
+-> linking to col core 44 (4, 5) using link 11
+-> linking to col core 52 (4, 6) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 29, (5, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 25 (1, 3) using link 1
+-> linking to row core 26 (2, 3) using link 2
+-> linking to row core 27 (3, 3) using link 3
+-> linking to row core 28 (4, 3) using link 4
+-> linking to row core 30 (6, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 13 (5, 1) using link 8
+-> linking to col core 21 (5, 2) using link 9
+-> linking to col core 37 (5, 4) using link 10
+-> linking to col core 45 (5, 5) using link 11
+-> linking to col core 53 (5, 6) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 30, (6, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 25 (1, 3) using link 1
+-> linking to row core 26 (2, 3) using link 2
+-> linking to row core 27 (3, 3) using link 3
+-> linking to row core 28 (4, 3) using link 4
+-> linking to row core 29 (5, 3) using link 5
+-> linking to row core 31 (7, 3) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 14 (6, 1) using link 8
+-> linking to col core 22 (6, 2) using link 9
+-> linking to col core 38 (6, 4) using link 10
+-> linking to col core 46 (6, 5) using link 11
+-> linking to col core 54 (6, 6) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 31, (7, 3):
+-> linking to row core 24 (0, 3) using link 0
+-> linking to row core 25 (1, 3) using link 1
+-> linking to row core 26 (2, 3) using link 2
+-> linking to row core 27 (3, 3) using link 3
+-> linking to row core 28 (4, 3) using link 4
+-> linking to row core 29 (5, 3) using link 5
+-> linking to row core 30 (6, 3) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 15 (7, 1) using link 8
+-> linking to col core 23 (7, 2) using link 9
+-> linking to col core 39 (7, 4) using link 10
+-> linking to col core 47 (7, 5) using link 11
+-> linking to col core 55 (7, 6) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 32, (0, 4):
+-> linking to row core 33 (1, 4) using link 0
+-> linking to row core 34 (2, 4) using link 1
+-> linking to row core 35 (3, 4) using link 2
+-> linking to row core 36 (4, 4) using link 3
+-> linking to row core 37 (5, 4) using link 4
+-> linking to row core 38 (6, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 8 (0, 1) using link 8
+-> linking to col core 16 (0, 2) using link 9
+-> linking to col core 24 (0, 3) using link 10
+-> linking to col core 40 (0, 5) using link 11
+-> linking to col core 48 (0, 6) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 33, (1, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 34 (2, 4) using link 1
+-> linking to row core 35 (3, 4) using link 2
+-> linking to row core 36 (4, 4) using link 3
+-> linking to row core 37 (5, 4) using link 4
+-> linking to row core 38 (6, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 9 (1, 1) using link 8
+-> linking to col core 17 (1, 2) using link 9
+-> linking to col core 25 (1, 3) using link 10
+-> linking to col core 41 (1, 5) using link 11
+-> linking to col core 49 (1, 6) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 34, (2, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 33 (1, 4) using link 1
+-> linking to row core 35 (3, 4) using link 2
+-> linking to row core 36 (4, 4) using link 3
+-> linking to row core 37 (5, 4) using link 4
+-> linking to row core 38 (6, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 10 (2, 1) using link 8
+-> linking to col core 18 (2, 2) using link 9
+-> linking to col core 26 (2, 3) using link 10
+-> linking to col core 42 (2, 5) using link 11
+-> linking to col core 50 (2, 6) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 35, (3, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 33 (1, 4) using link 1
+-> linking to row core 34 (2, 4) using link 2
+-> linking to row core 36 (4, 4) using link 3
+-> linking to row core 37 (5, 4) using link 4
+-> linking to row core 38 (6, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 11 (3, 1) using link 8
+-> linking to col core 19 (3, 2) using link 9
+-> linking to col core 27 (3, 3) using link 10
+-> linking to col core 43 (3, 5) using link 11
+-> linking to col core 51 (3, 6) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 36, (4, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 33 (1, 4) using link 1
+-> linking to row core 34 (2, 4) using link 2
+-> linking to row core 35 (3, 4) using link 3
+-> linking to row core 37 (5, 4) using link 4
+-> linking to row core 38 (6, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 12 (4, 1) using link 8
+-> linking to col core 20 (4, 2) using link 9
+-> linking to col core 28 (4, 3) using link 10
+-> linking to col core 44 (4, 5) using link 11
+-> linking to col core 52 (4, 6) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 37, (5, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 33 (1, 4) using link 1
+-> linking to row core 34 (2, 4) using link 2
+-> linking to row core 35 (3, 4) using link 3
+-> linking to row core 36 (4, 4) using link 4
+-> linking to row core 38 (6, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 13 (5, 1) using link 8
+-> linking to col core 21 (5, 2) using link 9
+-> linking to col core 29 (5, 3) using link 10
+-> linking to col core 45 (5, 5) using link 11
+-> linking to col core 53 (5, 6) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 38, (6, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 33 (1, 4) using link 1
+-> linking to row core 34 (2, 4) using link 2
+-> linking to row core 35 (3, 4) using link 3
+-> linking to row core 36 (4, 4) using link 4
+-> linking to row core 37 (5, 4) using link 5
+-> linking to row core 39 (7, 4) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 14 (6, 1) using link 8
+-> linking to col core 22 (6, 2) using link 9
+-> linking to col core 30 (6, 3) using link 10
+-> linking to col core 46 (6, 5) using link 11
+-> linking to col core 54 (6, 6) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 39, (7, 4):
+-> linking to row core 32 (0, 4) using link 0
+-> linking to row core 33 (1, 4) using link 1
+-> linking to row core 34 (2, 4) using link 2
+-> linking to row core 35 (3, 4) using link 3
+-> linking to row core 36 (4, 4) using link 4
+-> linking to row core 37 (5, 4) using link 5
+-> linking to row core 38 (6, 4) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 15 (7, 1) using link 8
+-> linking to col core 23 (7, 2) using link 9
+-> linking to col core 31 (7, 3) using link 10
+-> linking to col core 47 (7, 5) using link 11
+-> linking to col core 55 (7, 6) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 40, (0, 5):
+-> linking to row core 41 (1, 5) using link 0
+-> linking to row core 42 (2, 5) using link 1
+-> linking to row core 43 (3, 5) using link 2
+-> linking to row core 44 (4, 5) using link 3
+-> linking to row core 45 (5, 5) using link 4
+-> linking to row core 46 (6, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 8 (0, 1) using link 8
+-> linking to col core 16 (0, 2) using link 9
+-> linking to col core 24 (0, 3) using link 10
+-> linking to col core 32 (0, 4) using link 11
+-> linking to col core 48 (0, 6) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 41, (1, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 42 (2, 5) using link 1
+-> linking to row core 43 (3, 5) using link 2
+-> linking to row core 44 (4, 5) using link 3
+-> linking to row core 45 (5, 5) using link 4
+-> linking to row core 46 (6, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 9 (1, 1) using link 8
+-> linking to col core 17 (1, 2) using link 9
+-> linking to col core 25 (1, 3) using link 10
+-> linking to col core 33 (1, 4) using link 11
+-> linking to col core 49 (1, 6) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 42, (2, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 41 (1, 5) using link 1
+-> linking to row core 43 (3, 5) using link 2
+-> linking to row core 44 (4, 5) using link 3
+-> linking to row core 45 (5, 5) using link 4
+-> linking to row core 46 (6, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 10 (2, 1) using link 8
+-> linking to col core 18 (2, 2) using link 9
+-> linking to col core 26 (2, 3) using link 10
+-> linking to col core 34 (2, 4) using link 11
+-> linking to col core 50 (2, 6) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 43, (3, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 41 (1, 5) using link 1
+-> linking to row core 42 (2, 5) using link 2
+-> linking to row core 44 (4, 5) using link 3
+-> linking to row core 45 (5, 5) using link 4
+-> linking to row core 46 (6, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 11 (3, 1) using link 8
+-> linking to col core 19 (3, 2) using link 9
+-> linking to col core 27 (3, 3) using link 10
+-> linking to col core 35 (3, 4) using link 11
+-> linking to col core 51 (3, 6) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 44, (4, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 41 (1, 5) using link 1
+-> linking to row core 42 (2, 5) using link 2
+-> linking to row core 43 (3, 5) using link 3
+-> linking to row core 45 (5, 5) using link 4
+-> linking to row core 46 (6, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 12 (4, 1) using link 8
+-> linking to col core 20 (4, 2) using link 9
+-> linking to col core 28 (4, 3) using link 10
+-> linking to col core 36 (4, 4) using link 11
+-> linking to col core 52 (4, 6) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 45, (5, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 41 (1, 5) using link 1
+-> linking to row core 42 (2, 5) using link 2
+-> linking to row core 43 (3, 5) using link 3
+-> linking to row core 44 (4, 5) using link 4
+-> linking to row core 46 (6, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 13 (5, 1) using link 8
+-> linking to col core 21 (5, 2) using link 9
+-> linking to col core 29 (5, 3) using link 10
+-> linking to col core 37 (5, 4) using link 11
+-> linking to col core 53 (5, 6) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 46, (6, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 41 (1, 5) using link 1
+-> linking to row core 42 (2, 5) using link 2
+-> linking to row core 43 (3, 5) using link 3
+-> linking to row core 44 (4, 5) using link 4
+-> linking to row core 45 (5, 5) using link 5
+-> linking to row core 47 (7, 5) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 14 (6, 1) using link 8
+-> linking to col core 22 (6, 2) using link 9
+-> linking to col core 30 (6, 3) using link 10
+-> linking to col core 38 (6, 4) using link 11
+-> linking to col core 54 (6, 6) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 47, (7, 5):
+-> linking to row core 40 (0, 5) using link 0
+-> linking to row core 41 (1, 5) using link 1
+-> linking to row core 42 (2, 5) using link 2
+-> linking to row core 43 (3, 5) using link 3
+-> linking to row core 44 (4, 5) using link 4
+-> linking to row core 45 (5, 5) using link 5
+-> linking to row core 46 (6, 5) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 15 (7, 1) using link 8
+-> linking to col core 23 (7, 2) using link 9
+-> linking to col core 31 (7, 3) using link 10
+-> linking to col core 39 (7, 4) using link 11
+-> linking to col core 55 (7, 6) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 48, (0, 6):
+-> linking to row core 49 (1, 6) using link 0
+-> linking to row core 50 (2, 6) using link 1
+-> linking to row core 51 (3, 6) using link 2
+-> linking to row core 52 (4, 6) using link 3
+-> linking to row core 53 (5, 6) using link 4
+-> linking to row core 54 (6, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 8 (0, 1) using link 8
+-> linking to col core 16 (0, 2) using link 9
+-> linking to col core 24 (0, 3) using link 10
+-> linking to col core 32 (0, 4) using link 11
+-> linking to col core 40 (0, 5) using link 12
+-> linking to col core 56 (0, 7) using link 13
+
+for router 49, (1, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 50 (2, 6) using link 1
+-> linking to row core 51 (3, 6) using link 2
+-> linking to row core 52 (4, 6) using link 3
+-> linking to row core 53 (5, 6) using link 4
+-> linking to row core 54 (6, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 9 (1, 1) using link 8
+-> linking to col core 17 (1, 2) using link 9
+-> linking to col core 25 (1, 3) using link 10
+-> linking to col core 33 (1, 4) using link 11
+-> linking to col core 41 (1, 5) using link 12
+-> linking to col core 57 (1, 7) using link 13
+
+for router 50, (2, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 49 (1, 6) using link 1
+-> linking to row core 51 (3, 6) using link 2
+-> linking to row core 52 (4, 6) using link 3
+-> linking to row core 53 (5, 6) using link 4
+-> linking to row core 54 (6, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 10 (2, 1) using link 8
+-> linking to col core 18 (2, 2) using link 9
+-> linking to col core 26 (2, 3) using link 10
+-> linking to col core 34 (2, 4) using link 11
+-> linking to col core 42 (2, 5) using link 12
+-> linking to col core 58 (2, 7) using link 13
+
+for router 51, (3, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 49 (1, 6) using link 1
+-> linking to row core 50 (2, 6) using link 2
+-> linking to row core 52 (4, 6) using link 3
+-> linking to row core 53 (5, 6) using link 4
+-> linking to row core 54 (6, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 11 (3, 1) using link 8
+-> linking to col core 19 (3, 2) using link 9
+-> linking to col core 27 (3, 3) using link 10
+-> linking to col core 35 (3, 4) using link 11
+-> linking to col core 43 (3, 5) using link 12
+-> linking to col core 59 (3, 7) using link 13
+
+for router 52, (4, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 49 (1, 6) using link 1
+-> linking to row core 50 (2, 6) using link 2
+-> linking to row core 51 (3, 6) using link 3
+-> linking to row core 53 (5, 6) using link 4
+-> linking to row core 54 (6, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 12 (4, 1) using link 8
+-> linking to col core 20 (4, 2) using link 9
+-> linking to col core 28 (4, 3) using link 10
+-> linking to col core 36 (4, 4) using link 11
+-> linking to col core 44 (4, 5) using link 12
+-> linking to col core 60 (4, 7) using link 13
+
+for router 53, (5, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 49 (1, 6) using link 1
+-> linking to row core 50 (2, 6) using link 2
+-> linking to row core 51 (3, 6) using link 3
+-> linking to row core 52 (4, 6) using link 4
+-> linking to row core 54 (6, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 13 (5, 1) using link 8
+-> linking to col core 21 (5, 2) using link 9
+-> linking to col core 29 (5, 3) using link 10
+-> linking to col core 37 (5, 4) using link 11
+-> linking to col core 45 (5, 5) using link 12
+-> linking to col core 61 (5, 7) using link 13
+
+for router 54, (6, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 49 (1, 6) using link 1
+-> linking to row core 50 (2, 6) using link 2
+-> linking to row core 51 (3, 6) using link 3
+-> linking to row core 52 (4, 6) using link 4
+-> linking to row core 53 (5, 6) using link 5
+-> linking to row core 55 (7, 6) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 14 (6, 1) using link 8
+-> linking to col core 22 (6, 2) using link 9
+-> linking to col core 30 (6, 3) using link 10
+-> linking to col core 38 (6, 4) using link 11
+-> linking to col core 46 (6, 5) using link 12
+-> linking to col core 62 (6, 7) using link 13
+
+for router 55, (7, 6):
+-> linking to row core 48 (0, 6) using link 0
+-> linking to row core 49 (1, 6) using link 1
+-> linking to row core 50 (2, 6) using link 2
+-> linking to row core 51 (3, 6) using link 3
+-> linking to row core 52 (4, 6) using link 4
+-> linking to row core 53 (5, 6) using link 5
+-> linking to row core 54 (6, 6) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 15 (7, 1) using link 8
+-> linking to col core 23 (7, 2) using link 9
+-> linking to col core 31 (7, 3) using link 10
+-> linking to col core 39 (7, 4) using link 11
+-> linking to col core 47 (7, 5) using link 12
+-> linking to col core 63 (7, 7) using link 13
+
+for router 56, (0, 7):
+-> linking to row core 57 (1, 7) using link 0
+-> linking to row core 58 (2, 7) using link 1
+-> linking to row core 59 (3, 7) using link 2
+-> linking to row core 60 (4, 7) using link 3
+-> linking to row core 61 (5, 7) using link 4
+-> linking to row core 62 (6, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 0 (0, 0) using link 7
+-> linking to col core 8 (0, 1) using link 8
+-> linking to col core 16 (0, 2) using link 9
+-> linking to col core 24 (0, 3) using link 10
+-> linking to col core 32 (0, 4) using link 11
+-> linking to col core 40 (0, 5) using link 12
+-> linking to col core 48 (0, 6) using link 13
+
+for router 57, (1, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 58 (2, 7) using link 1
+-> linking to row core 59 (3, 7) using link 2
+-> linking to row core 60 (4, 7) using link 3
+-> linking to row core 61 (5, 7) using link 4
+-> linking to row core 62 (6, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 1 (1, 0) using link 7
+-> linking to col core 9 (1, 1) using link 8
+-> linking to col core 17 (1, 2) using link 9
+-> linking to col core 25 (1, 3) using link 10
+-> linking to col core 33 (1, 4) using link 11
+-> linking to col core 41 (1, 5) using link 12
+-> linking to col core 49 (1, 6) using link 13
+
+for router 58, (2, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 57 (1, 7) using link 1
+-> linking to row core 59 (3, 7) using link 2
+-> linking to row core 60 (4, 7) using link 3
+-> linking to row core 61 (5, 7) using link 4
+-> linking to row core 62 (6, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 2 (2, 0) using link 7
+-> linking to col core 10 (2, 1) using link 8
+-> linking to col core 18 (2, 2) using link 9
+-> linking to col core 26 (2, 3) using link 10
+-> linking to col core 34 (2, 4) using link 11
+-> linking to col core 42 (2, 5) using link 12
+-> linking to col core 50 (2, 6) using link 13
+
+for router 59, (3, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 57 (1, 7) using link 1
+-> linking to row core 58 (2, 7) using link 2
+-> linking to row core 60 (4, 7) using link 3
+-> linking to row core 61 (5, 7) using link 4
+-> linking to row core 62 (6, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 3 (3, 0) using link 7
+-> linking to col core 11 (3, 1) using link 8
+-> linking to col core 19 (3, 2) using link 9
+-> linking to col core 27 (3, 3) using link 10
+-> linking to col core 35 (3, 4) using link 11
+-> linking to col core 43 (3, 5) using link 12
+-> linking to col core 51 (3, 6) using link 13
+
+for router 60, (4, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 57 (1, 7) using link 1
+-> linking to row core 58 (2, 7) using link 2
+-> linking to row core 59 (3, 7) using link 3
+-> linking to row core 61 (5, 7) using link 4
+-> linking to row core 62 (6, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 4 (4, 0) using link 7
+-> linking to col core 12 (4, 1) using link 8
+-> linking to col core 20 (4, 2) using link 9
+-> linking to col core 28 (4, 3) using link 10
+-> linking to col core 36 (4, 4) using link 11
+-> linking to col core 44 (4, 5) using link 12
+-> linking to col core 52 (4, 6) using link 13
+
+for router 61, (5, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 57 (1, 7) using link 1
+-> linking to row core 58 (2, 7) using link 2
+-> linking to row core 59 (3, 7) using link 3
+-> linking to row core 60 (4, 7) using link 4
+-> linking to row core 62 (6, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 5 (5, 0) using link 7
+-> linking to col core 13 (5, 1) using link 8
+-> linking to col core 21 (5, 2) using link 9
+-> linking to col core 29 (5, 3) using link 10
+-> linking to col core 37 (5, 4) using link 11
+-> linking to col core 45 (5, 5) using link 12
+-> linking to col core 53 (5, 6) using link 13
+
+for router 62, (6, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 57 (1, 7) using link 1
+-> linking to row core 58 (2, 7) using link 2
+-> linking to row core 59 (3, 7) using link 3
+-> linking to row core 60 (4, 7) using link 4
+-> linking to row core 61 (5, 7) using link 5
+-> linking to row core 63 (7, 7) using link 6
+-> linking to col core 6 (6, 0) using link 7
+-> linking to col core 14 (6, 1) using link 8
+-> linking to col core 22 (6, 2) using link 9
+-> linking to col core 30 (6, 3) using link 10
+-> linking to col core 38 (6, 4) using link 11
+-> linking to col core 46 (6, 5) using link 12
+-> linking to col core 54 (6, 6) using link 13
+
+for router 63, (7, 7):
+-> linking to row core 56 (0, 7) using link 0
+-> linking to row core 57 (1, 7) using link 1
+-> linking to row core 58 (2, 7) using link 2
+-> linking to row core 59 (3, 7) using link 3
+-> linking to row core 60 (4, 7) using link 4
+-> linking to row core 61 (5, 7) using link 5
+-> linking to row core 62 (6, 7) using link 6
+-> linking to col core 7 (7, 0) using link 7
+-> linking to col core 15 (7, 1) using link 8
+-> linking to col core 23 (7, 2) using link 9
+-> linking to col core 31 (7, 3) using link 10
+-> linking to col core 39 (7, 4) using link 11
+-> linking to col core 47 (7, 5) using link 12
+-> linking to col core 55 (7, 6) using link 13

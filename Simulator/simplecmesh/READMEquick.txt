@@ -23,3 +23,5 @@ To run Netsim:
 
 make clean && cd .. && make clean && make && cd ./testn && make
 && ./cmesh 4 1 5 10000 0
+
+./cmesh 4 1 5 10 0

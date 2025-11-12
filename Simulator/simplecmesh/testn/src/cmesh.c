@@ -36,8 +36,8 @@ int GetSwitchId(int cordx, int cordy)
 }
 
 
-/************************************ hypercube routing *************************************/
-int route_hypercube(int source, int dest){
+/********************************* flattened butterfly routing **********************************/
+int route_flattened_butterfly(int source, int dest){
 	int tempcpu;  // keep legacy naming
 	
 	int source_x = FindXcord(source);
@@ -153,60 +153,106 @@ int router(int *src, int *dest, int id){
 	
 	if (current_router == dest_router){
 		demuxret = RADIX - 1;
-		// printf("    I am at the source! :)\n");
-		// printf("    demuxret = %i\n", demuxret);
+		printf("    I am at the source! :)\n");
+		printf("    demuxret = %i\n", demuxret);
 	}
 	else{
 		// hypercube routing
-		int tempcpu = route_hypercube(current_router, dest_router);
-		int tempcpu_x = FindXcord(tempcpu);
-		int tempcpu_y = FindYcord(tempcpu);
+		int nextcpu = route_flattened_butterfly(current_router, dest_router);
+		int nextcpu_x = FindXcord(nextcpu);
+		int nextcpu_y = FindYcord(nextcpu);
 		
 		// find demuxret
-		if (cur_xoffset != dest_xoffset){  // look across x
-			demuxret = 0;  // links [0, 1, ..., K] are links across rows
+		// see if the x dim changed in routing
+		if (cur_xoffset != nextcpu_x){
+			printf("routed in x\n");
+			// x did change (routed along x)
+			demuxret = 0;
 			for (int x = 0; x < K; x++){
-				if (x == tempcpu_x){
-					printf("    routing along x\n");
-					if (x != 0){
-						demuxret--;
-					}
+				printf("%i ?= %i  -> (%i)\n", x, nextcpu_x, x == nextcpu_x);
+				printf("%i ?= %i  -> (%i)\n", x, cur_xoffset, x == cur_xoffset);
+				if (x == nextcpu_x){
+					printf("%i = %i", x, nextcpu_x);
 					break;
 				}
-				else{
+				else if (x != cur_xoffset){
 					demuxret++;
 				}
+				printf("x = %i, demuxret = %i\n", x, demuxret);
 			}
 		}
-		else{  // otherwise, look across y
-			demuxret = K - 1;  // links [K, ..., K**2 - 1, K**2] are links across rows
+		else{
+			printf("routed in y\n");
+			demuxret = K - 1;
 			for (int y = 0; y < K; y++){
-				if (y == tempcpu_y){
-					printf("    routing along y\n");
-					if (y != 0){
-						demuxret--;
-					}
+				printf("%i ?= %i  -> (%i)\n", y, nextcpu_y, y == nextcpu_y);
+				printf("%i ?= %i  -> (%i)\n", y, cur_yoffset, y == cur_yoffset);
+				if (y == nextcpu_y){
+					printf("%i = %i\n", y, nextcpu_y);
 					break;
 				}
-				else{
+				else if (y != cur_yoffset){
 					demuxret++;
 				}
+				printf("y = %i, demuxret = %i\n", y, demuxret);
 			}
 		}
+		
+		// find demuxret
+		// if (cur_xoffset != dest_xoffset){  // look across x
+		// 	demuxret = 0;  // links [0, 1, ..., K] are links across rows
+		// 	for (int x = 0; x < K; x++){
+		// 		if (x == tempcpu_x){
+		// 			printf("    routing along x\n");
+		// 			// demuxret--;
+		// 			break;
+		// 		}
+		// 		else if (x == cur_xoffset){
+		// 			demuxret--;
+		// 		}
+		// 		else{
+		// 			demuxret++;
+		// 		}
+		// 		// else if (x != cur_xoffset){
+		// 		// 	demuxret++;
+		// 		// }
+		// 		printf("demuxret = %i\n", demuxret);
+		// 	}
+		// }
+		// else{  // otherwise, look across y
+		// 	demuxret = K - 1;  // links [K, ..., K**2 - 1, K**2] are links across rows
+		// 	for (int y = 0; y < K; y++){
+		// 		if (y == tempcpu_y){
+		// 			printf("    routing along y\n");
+		// 			// demuxret--;
+		// 			break;
+		// 		}
+		// 		else if (y == cur_yoffset){
+		// 			demuxret--;
+		// 		}
+		// 		else{
+		// 			demuxret++;
+		// 		}
+		// 		// else if (y != cur_yoffset){
+		// 		// 	demuxret++;
+		// 		// }
+		// 		printf("demuxret = %i\n", demuxret);
+		// 	}
+		// }
 		printf("--> routing from %i (%i, %i) to %i (%i, %i) via demuxret = (%i)\n",
 			   current_router, cur_xoffset, cur_yoffset,
-			   tempcpu, tempcpu_x, tempcpu_y,
+			   nextcpu, nextcpu_x, nextcpu_y,
 			   demuxret);
 	}
 	
 	// Keep track of Router and Link utilization
-	if(demuxret < (RADIX)){
+	if(demuxret < RADIX - 1){
 		hoptype[1]++;  // network hop increase
-		// printf("    Routing in network.\n");
+		printf("    Routing in network.\n");
 	}
 	else{ 				// OPORT
 		hoptype[0]++;  // output hop increase
-		// printf("    At dest, routing to core.\n");
+		printf("    At dest, routing to core.\n");
 	}
 	
 	printf("    returning demux=%i for id=%i\n", demuxret, id);
@@ -354,22 +400,24 @@ void UserEventR()
 		pkt = PacketReceive(outport);
 		pktdata = PacketGetData(pkt);
 		if(pktdata->destcpu != index ) {
-			printf("Receiver %d\n", index);
+			// printf("Receiver %d\n", index);
+			printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 			printf("PACKET INFO (error)\n");
-			printf("pktdata->createtime = %i\n", pktdata->createtime);
-			printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
-			printf("pktdata->route      = %i\n", pktdata->route);
-			printf("pktdata->routeA     = %i\n", pktdata->routeA);
+			// printf("pktdata->createtime = %i\n", pktdata->createtime);
+			// printf("pktdata->intercpu   = %i\n", pktdata->intercpu);
+			// printf("pktdata->route      = %i\n", pktdata->route);
+			// printf("pktdata->routeA     = %i\n", pktdata->routeA);
 			printf("pktdata->srccpu     = %i\n", pktdata->srccpu);
-			printf("pktdata->switching  = %i\n", pktdata->switching);
-			printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
-			printf("pktdata->lnk        = %i\n", pktdata->lnk);
+			printf("pktdata->destcpu    = %i\n", pktdata->destcpu);
+			// printf("pktdata->switching  = %i\n", pktdata->switching);
+			// printf("pktdata->vcindex    = %i\n", pktdata->vcindex);
+			// printf("pktdata->lnk        = %i\n", pktdata->lnk);
 			printf("pktdata->seqno      = %i\n", pktdata->seqno);
-			printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
+			// printf("pktdata->oporttime  = %i\n", pktdata->oporttime);
 			printf("----------------------\n");
 			YS__errmsg("Incorrect destination received\n");
 		}
-		// printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
+		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 		
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
@@ -551,7 +599,7 @@ char** argv;
 	for (int core = 0; core < MAX_CPU; core++){
 		core_x = FindXcord(core);
 		core_y = FindYcord(core);
-		printf("for router %i, (%i, %i):\n", core, core_x, core_y);
+		// printf("for router %i, (%i, %i):\n", core, core_x, core_y);
 		
 		link_i = 0;
 		// link rows
@@ -560,8 +608,8 @@ char** argv;
 				link_core = GetSwitchId(x, core_y);  // grab router along row
 				
 				// link
-				printf("-> linking to row core %i (%i, %i) using link %i\n", 
-					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
+				// printf("-> linking to row core %i (%i, %i) using link %i\n", 
+				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				link_i++;  // get ready to link next core
@@ -574,15 +622,15 @@ char** argv;
 				link_core = GetSwitchId(core_x, y);  // grab router along col
 				
 				// link
-				printf("-> linking to col core %i (%i, %i) using link %i\n", 
-					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
+				// printf("-> linking to col core %i (%i, %i) using link %i\n", 
+				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				link_i++;  // get ready to link next core
 			}
 		}
 		
-		printf("\n");
+		// printf("\n");
 	}
 	// printf("Routers linked.\n\n");
 
