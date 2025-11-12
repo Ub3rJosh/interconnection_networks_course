@@ -50,8 +50,9 @@ int route_flattened_butterfly(int source, int dest){
 		tempcpu = GetSwitchId(dest_x, source_y);
 	}
 	else{
-		// tempcpu = dest;
-		tempcpu = GetSwitchId(dest_x, dest_y);
+		tempcpu = dest;
+		// tempcpu = GetSwitchId(dest_x, dest_y);
+		// printf("dest = %i  ?=  tempcpu = %i\n", dest, tempcpu);
 	}
 	return tempcpu;
 }
@@ -152,12 +153,13 @@ int router(int *src, int *dest, int id){
 	printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
 	
 	if (current_router == dest_router){
+		printf("    At dest, routing to core.\n");
 		demuxret = RADIX - 1;
-		printf("    I am at the source! :)\n");
 		printf("    demuxret = %i\n", demuxret);
 	}
 	else{
-		// hypercube routing
+		printf("    Routing in network.\n");
+		// flattened butterfly routing
 		int nextcpu = route_flattened_butterfly(current_router, dest_router);
 		int nextcpu_x = FindXcord(nextcpu);
 		int nextcpu_y = FindYcord(nextcpu);
@@ -165,80 +167,42 @@ int router(int *src, int *dest, int id){
 		// find demuxret
 		// see if the x dim changed in routing
 		if (cur_xoffset != nextcpu_x){
-			printf("routed in x\n");
+			// printf("routed in x\n");
 			// x did change (routed along x)
 			demuxret = 0;
-			for (int x = 0; x < K; x++){
-				printf("%i ?= %i  -> (%i)\n", x, nextcpu_x, x == nextcpu_x);
-				printf("%i ?= %i  -> (%i)\n", x, cur_xoffset, x == cur_xoffset);
-				if (x == nextcpu_x){
-					printf("%i = %i", x, nextcpu_x);
+			for (int x = 0; x < XNUMPERDIM; x++){
+				// printf("%i ?= %i  -> (%i)\n", x, nextcpu_x, x == nextcpu_x);
+				// printf("%i ?= %i  -> (%i)\n", x, cur_xoffset, x == cur_xoffset);
+				if (x == cur_xoffset){
+					// skip counting the current router's number for consistency
+					continue;
+				}
+				else if (x == nextcpu_x){
+					// we found the demuxret
 					break;
 				}
-				else if (x != cur_xoffset){
-					demuxret++;
-				}
-				printf("x = %i, demuxret = %i\n", x, demuxret);
+				demuxret++;
+				// printf("x = %i, demuxret = %i\n", x, demuxret);
 			}
 		}
 		else{
-			printf("routed in y\n");
-			demuxret = K - 1;
-			for (int y = 0; y < K; y++){
-				printf("%i ?= %i  -> (%i)\n", y, nextcpu_y, y == nextcpu_y);
-				printf("%i ?= %i  -> (%i)\n", y, cur_yoffset, y == cur_yoffset);
-				if (y == nextcpu_y){
-					printf("%i = %i\n", y, nextcpu_y);
+			// printf("routed in y\n");
+			demuxret = YNUMPERDIM - 1;
+			for (int y = 0; y < YNUMPERDIM; y++){
+				// printf("%i ?= %i  -> (%i)\n", y, nextcpu_y, y == nextcpu_y);
+				// printf("%i ?= %i  -> (%i)\n", y, cur_yoffset, y == cur_yoffset);
+				if (y == cur_yoffset){
+					continue;
+				}
+				else if (y == nextcpu_y){
+					// printf("%i = %i\n", y, nextcpu_y);
 					break;
 				}
-				else if (y != cur_yoffset){
-					demuxret++;
-				}
-				printf("y = %i, demuxret = %i\n", y, demuxret);
+				demuxret++;
+				// printf("y = %i, demuxret = %i\n", y, demuxret);
 			}
 		}
 		
-		// find demuxret
-		// if (cur_xoffset != dest_xoffset){  // look across x
-		// 	demuxret = 0;  // links [0, 1, ..., K] are links across rows
-		// 	for (int x = 0; x < K; x++){
-		// 		if (x == tempcpu_x){
-		// 			printf("    routing along x\n");
-		// 			// demuxret--;
-		// 			break;
-		// 		}
-		// 		else if (x == cur_xoffset){
-		// 			demuxret--;
-		// 		}
-		// 		else{
-		// 			demuxret++;
-		// 		}
-		// 		// else if (x != cur_xoffset){
-		// 		// 	demuxret++;
-		// 		// }
-		// 		printf("demuxret = %i\n", demuxret);
-		// 	}
-		// }
-		// else{  // otherwise, look across y
-		// 	demuxret = K - 1;  // links [K, ..., K**2 - 1, K**2] are links across rows
-		// 	for (int y = 0; y < K; y++){
-		// 		if (y == tempcpu_y){
-		// 			printf("    routing along y\n");
-		// 			// demuxret--;
-		// 			break;
-		// 		}
-		// 		else if (y == cur_yoffset){
-		// 			demuxret--;
-		// 		}
-		// 		else{
-		// 			demuxret++;
-		// 		}
-		// 		// else if (y != cur_yoffset){
-		// 		// 	demuxret++;
-		// 		// }
-		// 		printf("demuxret = %i\n", demuxret);
-		// 	}
-		// }
 		printf("--> routing from %i (%i, %i) to %i (%i, %i) via demuxret = (%i)\n",
 			   current_router, cur_xoffset, cur_yoffset,
 			   nextcpu, nextcpu_x, nextcpu_y,
@@ -248,11 +212,9 @@ int router(int *src, int *dest, int id){
 	// Keep track of Router and Link utilization
 	if(demuxret < RADIX - 1){
 		hoptype[1]++;  // network hop increase
-		printf("    Routing in network.\n");
 	}
 	else{ 				// OPORT
 		hoptype[0]++;  // output hop increase
-		printf("    At dest, routing to core.\n");
 	}
 	
 	printf("    returning demux=%i for id=%i\n", demuxret, id);
@@ -599,17 +561,19 @@ char** argv;
 	for (int core = 0; core < MAX_CPU; core++){
 		core_x = FindXcord(core);
 		core_y = FindYcord(core);
-		// printf("for router %i, (%i, %i):\n", core, core_x, core_y);
+		printf("for router %i, (%i, %i):\n", core, core_x, core_y);
 		
 		link_i = 0;
 		// link rows
-		for (int x = 0; x < K; x++){
+		for (int x = 0; x < XNUMPERDIM; x++){
 			if (x != core_x){
 				link_core = GetSwitchId(x, core_y);  // grab router along row
 				
 				// link
-				// printf("-> linking to row core %i (%i, %i) using link %i\n", 
-				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
+				printf("-> linking to row core %i (%i, %i) using link %i\n", 
+					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
+				// NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
+				// DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				link_i++;  // get ready to link next core
@@ -617,20 +581,20 @@ char** argv;
 		}
 		
 		// link columns
-		for (int y = 0; y < K; y++){
+		for (int y = 0; y < YNUMPERDIM; y++){
 			if (y != core_y){
 				link_core = GetSwitchId(core_x, y);  // grab router along col
 				
 				// link
-				// printf("-> linking to col core %i (%i, %i) using link %i\n", 
-				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
+				printf("-> linking to col core %i (%i, %i) using link %i\n", 
+					   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
 				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
 				DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
 				link_i++;  // get ready to link next core
 			}
 		}
 		
-		// printf("\n");
+		printf("\n");
 	}
 	// printf("Routers linked.\n\n");
 
@@ -955,10 +919,10 @@ int power(int base, int n) // base^n
 int BitReversal(int source)
 {
 	int dest, src, i, sbit;
-	int bin_dest[DIMENSION1];
+	int bin_dest[K];
 
 	src = source;
-	for( i = DIMENSION1-1; i >= 0; i-- )
+	for( i = K-1; i >= 0; i-- )
 	{
 		sbit = src%2;
 		bin_dest[i] = sbit;
@@ -966,7 +930,7 @@ int BitReversal(int source)
 	}
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -978,10 +942,10 @@ int BitReversal(int source)
 int Butterfly(int source)
 {
 	int dest, src, i, sbit, temp;
-	int bin_dest[DIMENSION1];
+	int bin_dest[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_dest[i] = sbit;
@@ -989,11 +953,11 @@ int Butterfly(int source)
 	}
 
 	temp = bin_dest[0];
-	bin_dest[0] = bin_dest[DIMENSION1-1];
-	bin_dest[DIMENSION1-1] = temp;
+	bin_dest[0] = bin_dest[K-1];
+	bin_dest[K-1] = temp;
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -1005,10 +969,10 @@ int Butterfly(int source)
 int Complement(int source)
 {
 	int dest, src, i, sbit;
-	int bin_dest[DIMENSION1];
+	int bin_dest[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_dest[i] = ( (sbit == 0) ? 1 : 0 );
@@ -1016,7 +980,7 @@ int Complement(int source)
 	}
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -1028,31 +992,31 @@ int Complement(int source)
 int MatrixTranspose(int source)
 {
 	int dest, src, i,j, sbit;
-	int bin_src[DIMENSION1], bin_dest[DIMENSION1];
+	int bin_src[K], bin_dest[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_src[i] = sbit;
 		src = src/2;
 	}
 
-	j = DIMENSION1 - 1;
-	for( i = (DIMENSION1/2)-1; i >= 0; i-- )
+	j = K - 1;
+	for( i = (K/2)-1; i >= 0; i-- )
 	{
 		bin_dest[j] = bin_src[i];
 		j--;
 	}
 
-	for( i = DIMENSION1 - 1; i >= DIMENSION1/2; i-- )
+	for( i = K - 1; i >= K/2; i-- )
 	{
 		bin_dest[j] = bin_src[i];
 		j--;
 	}
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;
@@ -1064,10 +1028,10 @@ int MatrixTranspose(int source)
 int PerfectShuffle(int source)
 {
 	int dest1, dest, src, i, sbit, j;
-	int bin_dest[DIMENSION1], bin_src[DIMENSION1];
+	int bin_dest[K], bin_src[K];
 
 	src = source;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 	{
 		sbit = src%2;
 		bin_src[i] = sbit;
@@ -1075,15 +1039,15 @@ int PerfectShuffle(int source)
 	}
 
 	j = 1;
-	for( i = 0; i < DIMENSION1 - 1; i++ )
+	for( i = 0; i < K - 1; i++ )
 	{
 		bin_dest[j] = bin_src[i];
 		j++;
 	}
-	bin_dest[0] = bin_src[DIMENSION1-1];
+	bin_dest[0] = bin_src[K-1];
 
 	dest = 0;
-	for( i = 0; i < DIMENSION1; i++ )
+	for( i = 0; i < K; i++ )
 		dest = dest + ((bin_dest[i])*(power(2,i)));
 
 	return dest;

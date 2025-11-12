@@ -2040,7 +2040,7 @@ PACKET *pkt;
 				if( outbuf->vc_data.input_seqno[k] == pkt->data.seqno ) {
 					if( inbuf->output_seqno != pkt->data.seqno ) {
 						printf("op buf %d id %d ip buf %d id %d Incorrect seqnos %d %d type %d\n",
-							outbuf, outbuf->id, inbuf, inbuf->id, inbuf->output_seqno, pkt->data.seqno, pkt->data.pkttype);
+							    *outbuf, outbuf->id, *inbuf, inbuf->id, inbuf->output_seqno, pkt->data.seqno, pkt->data.pkttype);
 						YS__errmsg("Incorrect seqnos\n");
 					}
 
