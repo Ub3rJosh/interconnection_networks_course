@@ -149,38 +149,22 @@ int router(int *src, int *dest, int id){
 	src_xoffset = FindXcord(src_router);
 	src_yoffset = FindYcord(src_router);
 	
-	// printf("\n--- routing packet ---\n");
-	// printf("    routing info:\n");
-	// printf("    - source router: %i (%i, %i)\n", src_router, src_xoffset, src_yoffset);
-	// printf("    - current router: %i (%i, %i)\n", current_router, cur_xoffset, cur_yoffset);
-	// printf("    - dest router: %i (%i, %i)\n", dest_router, dest_xoffset, dest_yoffset);
-	printf("(%i) routing from %i (%i, %i) -> %i (%i, %i) -> %i (%i, %i)\n",
-		   total_routes,
-		   src_router, src_xoffset, src_yoffset, 
-		   current_router, cur_xoffset, cur_yoffset, 
-		   dest_router, dest_xoffset, dest_yoffset);
 	
 	if (current_router == dest_router){
-		// printf("    At dest, routing to core.\n");
+		printf("(%i) At dest, routing to core.\n", total_routes);
 		demuxret = RADIX - 1;
-		// printf("    demuxret = %i\n", demuxret);
 	}
 	else{
-		// printf("    Routing in network.\n");
 		// flattened butterfly routing
-		int nextcpu = route_flattened_butterfly(current_router, dest_router);
+		int nextcpu = route_flattened_butterfly(current_router, dest_router);  // find next router via DOR (x, then y)
 		int nextcpu_x = FindXcord(nextcpu);
 		int nextcpu_y = FindYcord(nextcpu);
 		
 		// find demuxret
 		// see if the x dim changed in routing
 		if (cur_xoffset != nextcpu_x){
-			// printf("routed in x\n");
-			// x did change (routed along x)
 			demuxret = 0;
 			for (int x = 0; x < XNUMPERDIM; x++){
-				// printf("%i ?= %i  -> (%i)\n", x, nextcpu_x, x == nextcpu_x);
-				// printf("%i ?= %i  -> (%i)\n", x, cur_xoffset, x == cur_xoffset);
 				if (x == cur_xoffset){
 					// skip counting the current router's number for consistency
 					continue;
@@ -190,31 +174,28 @@ int router(int *src, int *dest, int id){
 					break;
 				}
 				demuxret++;
-				// printf("x = %i, demuxret = %i\n", x, demuxret);
 			}
 		}
 		else{
 			// printf("routed in y\n");
 			demuxret = YNUMPERDIM - 1;
 			for (int y = 0; y < YNUMPERDIM; y++){
-				// printf("%i ?= %i  -> (%i)\n", y, nextcpu_y, y == nextcpu_y);
-				// printf("%i ?= %i  -> (%i)\n", y, cur_yoffset, y == cur_yoffset);
 				if (y == cur_yoffset){
 					continue;
 				}
 				else if (y == nextcpu_y){
-					// printf("%i = %i\n", y, nextcpu_y);
 					break;
 				}
 				demuxret++;
-				// printf("y = %i, demuxret = %i\n", y, demuxret);
 			}
+		printf("(%i) [src= %i (%i, %i); dest= %i (%i, %i)] routing from %i (%i, %i) -> %i (%i, %i) via link %i\n",
+		       total_routes,
+		       src_router, src_xoffset, src_yoffset, 
+			   dest_router, dest_xoffset, dest_yoffset,
+		       current_router, cur_xoffset, cur_yoffset, 
+		       nextcpu, nextcpu_x, nextcpu_y,
+		       demuxret);
 		}
-		
-		// printf("--> routing from %i (%i, %i) to %i (%i, %i) via demuxret = (%i)\n",
-		// 	   current_router, cur_xoffset, cur_yoffset,
-		// 	   nextcpu, nextcpu_x, nextcpu_y,
-		// 	   demuxret);
 	}
 	
 	// Keep track of Router and Link utilization
@@ -246,7 +227,6 @@ void UserEventS()
 	inport = (IPORT*)ActivityGetArg(ME);
 
 	// Cases to manage packet transmission, state is set in EventRescedTime(time, state)
-	int eventgetstate = EventGetState();
 	switch (EventGetState()) {
 		
 		case 0: /* To send or not to send */
@@ -335,7 +315,7 @@ void UserEventS()
 					pktdata->intercpu = tempcpu;
 					senddelay = PacketSend(pkt, inport, index, dest, i, pktsz, tempcpu);
 				}
-				return;	
+				// return;
 		
 		case 2: // Decide when this event will run next and reschedule it
 				injecttime[index] = injecttime[index] + inter;
@@ -390,7 +370,7 @@ void UserEventR()
 			printf("----------------------\n");
 			YS__errmsg("Incorrect destination received\n");
 		}
-		printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
+		// printf("RECEIVING packet %d %d %d time %g\n", pktdata->srccpu, index, pktdata->seqno, GetSimTime());
 		
 		if( (pktdata->pkttype == (pktdata->packetsize - 1)/FLITSZ) ) {
 			measure[pktdata->srccpu]->latency = measure[pktdata->srccpu]->latency + (GetSimTime() - pktdata->createtime);
@@ -565,52 +545,59 @@ char** argv;
 	}
 
 	// Interconnect the routers
-	int link_core, link_i;
-	int core, core_x, core_y;
-	// link across row (for KxK 2D mesh core layout)
-	// printf("-> %i <-\n", (RADIX - 1) / 2);
-	for (int core = 0; core < MAX_CPU; core++){
-		core_x = FindXcord(core);
-		core_y = FindYcord(core);
-		// printf("for router %i, (%i, %i):\n", core, core_x, core_y);
+	int link_router;
+	int input_link, output_link;
+	int router, router_x, router_y;
+	int offset = XNUMPERDIM - 1;
+	for (int router = 0; router < MAX_CPU; router++){
+		router_x = FindXcord(router);
+		router_y = FindYcord(router);
+		printf("for router %i, (%i, %i): ", router, router_x, router_y);
 		
-		link_i = 0;
 		// link rows
 		for (int x = 0; x < XNUMPERDIM; x++){
-			if (x != core_x){
-				link_core = GetSwitchId(x, core_y);  // grab router along row
+			if (x != router_x){
+				link_router = GetSwitchId(x, router_y);
+				
+				if (x < router_x){
+					input_link = router_x - 1;
+					output_link = x;
+				}
+				else{
+					input_link = router_x;
+					output_link = x - 1;
+				}
 				
 				// link
-				// printf("-> linking to row core %i (%i, %i) using link %i\n", 
-				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
-				// NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
-				// DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[core_x], 0, 0);
-				DemuxCreditBuffer(switches[link_core]->input_demux[core_x], switches[core]->output_buffer[link_i]);
-				link_i++;  // get ready to link next core
+				printf("row link to %i (%i, %i) with input_link=%i, output_link=%i\n",
+					   link_router, x, router_y, input_link, output_link);
+				NetworkConnect(switches[router]->output_buffer[output_link], switches[link_router]->input_demux[input_link], 0, 0);
+				DemuxCreditBuffer(switches[link_router]->input_demux[input_link], switches[router]->output_buffer[output_link]);
 			}
 		}
 		
 		// link columns
-		int maybe_fix = XNUMPERDIM - 1;
 		for (int y = 0; y < YNUMPERDIM; y++){
-			if (y != core_y){
-				link_core = GetSwitchId(core_x, y);  // grab router along col
+			if (y != router_y){
+				link_router = GetSwitchId(router_x, y);
+				
+				if (y < router_y){
+					input_link = router_y + offset - 1;
+					output_link = y + offset;
+				}
+				else{
+					input_link = router_y + offset;	
+					output_link = y + offset - 1;
+				}
 				
 				// link
-				// printf("-> linking to col core %i (%i, %i) using link %i\n", 
-				// 	   link_core, FindXcord(link_core), FindYcord(link_core), link_i);
-				// NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[link_i], 0, 0);
-				// DemuxCreditBuffer(switches[link_core]->input_demux[link_i], switches[core]->output_buffer[link_i]);
-				NetworkConnect(switches[core]->output_buffer[link_i], switches[link_core]->input_demux[core_y + XNUMPERDIM - 1], 0, 0);
-				DemuxCreditBuffer(switches[link_core]->input_demux[core_y + XNUMPERDIM - 1], switches[core]->output_buffer[link_i]);
-				link_i++;  // get ready to link next core
+				printf("row link to %i (%i, %i) with input_link=%i, output_link=%i\n",
+					   link_router, router_x, y, input_link, output_link);
+				NetworkConnect(switches[router]->output_buffer[output_link], switches[link_router]->input_demux[input_link], 0, 0);
+				DemuxCreditBuffer(switches[link_router]->input_demux[input_link], switches[router]->output_buffer[output_link]);
 			}
 		}
-		
-		// printf("\n");
 	}
-	// printf("Routers linked.\n\n");
 
 //********************************** Send and Recieve Events **********************************//
 	for( i = 0; i < MAX_ROUTERS; i++)
